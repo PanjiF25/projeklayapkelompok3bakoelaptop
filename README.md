@@ -270,10 +270,4 @@ Contributions welcome! Steps:
 
 ---
 
-<div align="center">
 
-### ⭐ Star this repo if you find it useful!
-
-**Made with ❤️ for Layanan Aplikasi Internet Course**
-
-</div>
