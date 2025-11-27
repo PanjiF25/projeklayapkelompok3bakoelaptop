@@ -1,0 +1,191 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    height: 100vh;
+    overflow: hidden; /* Mencegah scroll karena gambar besar */
+}
+
+.login-container {
+    display: flex;
+    width: 100%;
+    height: 100%;
+}
+
+/* Panel Kiri */
+.left-panel {
+    flex-basis: 55%;
+    background-color: #00e0b3;
+    padding: 80px 70px;
+    position: relative;
+    color: black;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Memusatkan teks secara vertikal */
+}
+
+.welcome-text {
+    max-width: 450px;
+    z-index: 3; /* Memastikan teks di atas gambar */
+}
+
+.welcome-text h2 {
+    font-size: 22px;
+    font-weight: 500; /* Dibuat lebih tipis */
+    letter-spacing: 1px;
+}
+
+.welcome-text h1 {
+    font-size: 52px;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 25px;
+}
+
+.welcome-text p {
+    font-size: 16px;
+    line-height: 1.7;
+    max-width: 400px;
+}
+
+.laptop-image {
+    position: absolute;
+    bottom: -50px; /* Posisi disesuaikan */
+    left: 30%;   /* Posisi disesuaikan */
+    width: 900px; /* Ukuran disesuaikan */
+    z-index: 2;
+}
+
+/* Panel Kanan */
+.right-panel {
+    flex-basis: 45%;
+    background-color: #f8f9fa; /* Latar sedikit abu-abu agar kartu menonjol */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-form-container {
+    background-color: white;
+    padding: 50px; /* Padding diperbesar */
+    border-radius: 25px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.05);
+    width: 100%;
+    max-width: 450px;
+    text-align: center;
+}
+
+.login-form-container h3 {
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 10px;
+}
+
+.login-form-container h3 strong span {
+    color: #00e0b3;
+}
+
+.login-form-container h1 {
+    font-size: 42px;
+    font-weight: 700;
+    margin-bottom: 35px; /* Jarak diperbesar */
+}
+
+/* Social Login */
+.social-login {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 35px; /* Jarak diperbesar */
+}
+
+.google-btn {
+    flex-grow: 1;
+    padding: 14px; /* Dibuat lebih tinggi */
+    border: 1px solid #ddd;
+    background-color: white;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.google-btn:hover {
+    background-color: #f7f7f7;
+}
+
+.google-btn .fa-google {
+    font-size: 20px;
+}
+
+.social-icon-btn {
+    width: 52px;
+    height: 52px;
+    border: none;
+    border-radius: 50%;
+    color: white;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+.facebook-btn { background-color: #1877F2; }
+.twitter-btn { background-color: #1DA1F2; }
+
+/* Formulir Utama */
+.login-form .form-group {
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.login-form label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.login-form input {
+    width: 100%;
+    padding: 16px; /* Dibuat lebih tinggi */
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    font-size: 15px;
+}
+
+.login-form input:focus {
+    outline: none;
+    border-color: #00e0b3;
+}
+
+.forgot-password {
+    display: block;
+    text-align: right;
+    margin-bottom: 30px;
+    color: #00a583;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.signin-btn {
+    width: 100%;
+    padding: 16px; /* Dibuat lebih tinggi */
+    background-color: #111;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.signin-btn:hover {
+    background-color: #333;
+}

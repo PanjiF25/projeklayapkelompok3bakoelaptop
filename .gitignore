@@ -1,0 +1,62 @@
+# Admin Credentials - DO NOT COMMIT
+ADMIN_CREDENTIALS.txt
+
+# Firebase Config with Real Credentials
+# Note: The template firebase-config.js in repo should have placeholder values
+# Users should replace with their own Firebase credentials
+firebase-config.js
+
+# Environment variables
+.env
+.env.local
+.env.production
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Dependencies
+node_modules/
+vendor/
+
+# Build files
+dist/
+build/
+*.min.js
+*.min.css
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Database
+*.sqlite
+*.db
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# Security
+*.pem
+*.key
+*.cert
+*.crt
+secrets/
+credentials/

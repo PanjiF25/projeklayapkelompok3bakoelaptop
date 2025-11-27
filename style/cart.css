@@ -1,0 +1,1121 @@
+﻿/* Cart Page Specific Styles */
+
+body {
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Animated Background Shapes - Like Home Page */
+body::before {
+  content: '';
+  position: absolute;
+  width: 460px;
+  height: 460px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  top: 140px;
+  left: -100px;
+  animation: float 7.5s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+body::after {
+  content: '';
+  position: absolute;
+  width: 340px;
+  height: 340px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 50%;
+  bottom: 60px;
+  right: -70px;
+  animation: float 9.5s ease-in-out infinite reverse;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.cart-container {
+  max-width: 900px;
+  margin: 50px auto;
+  padding: 40px;
+  background-color: white;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  animation: fadeInUp 0.8s ease-out;
+  min-height: 400px;
+  position: relative;
+  z-index: 1;
+}
+
+.cart-container h1 {
+  font-size: 32px;
+  color: #00a896;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.cart-container h1 img {
+  vertical-align: middle;
+  margin-right: 10px;
+}
+
+#cart-items {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+#cart-items p {
+  text-align: center;
+  color: #666;
+  font-size: 18px;
+  padding: 40px;
+}
+
+.cart-item {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 12px;
+  border: 2px solid #f0f0f0;
+  transition: all 0.3s ease;
+}
+
+.cart-item:hover {
+  border-color: #00d4aa;
+  box-shadow: 0 4px 12px rgba(0, 212, 170, 0.15);
+}
+
+.cart-item img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 10px;
+  flex-shrink: 0;
+  border: 2px solid #f0f0f0;
+}
+
+.item-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.item-details h3 {
+  font-size: 18px;
+  color: #333;
+  margin: 0 0 8px 0;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.item-details .item-price {
+  font-size: 20px;
+  color: #00d4aa;
+  font-weight: 700;
+  margin: 0;
+}
+
+.item-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.remove-item {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ff5252 100%);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.remove-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(255, 107, 107, 0.3);
+}
+
+.cart-item-info {
+  flex: 1;
+}
+
+.cart-item-info h4 {
+  font-size: 20px;
+  color: #333;
+  margin: 0 0 8px 0;
+  font-weight: 700;
+}
+
+.cart-item-info p {
+  font-size: 18px;
+  color: #00a896;
+  font-weight: 700;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+}
+
+.remove-item-btn {
+  background: linear-gradient(135deg, #ff4757 0%, #e84118 100%);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 600;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.remove-item-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(255, 71, 87, 0.4);
+}
+
+.cart-summary {
+  background: linear-gradient(135deg, #00d4aa 0%, #00a896 100%);
+  padding: 30px;
+  border-radius: 15px;
+  color: white;
+  text-align: center;
+  box-shadow: 0 6px 20px rgba(0, 212, 170, 0.3);
+}
+
+.cart-summary h3 {
+  font-size: 20px;
+  margin-bottom: 15px;
+  font-weight: 600;
+  opacity: 0.95;
+}
+
+.cart-summary #cart-total {
+  font-size: 36px;
+  font-weight: 800;
+  display: block;
+  margin-bottom: 25px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#checkout-btn {
+  background: white;
+  color: #00a896;
+  border: none;
+  padding: 16px 50px;
+  border-radius: 10px;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+#checkout-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+@media (max-width: 1024px) {
+  .cart-container {
+    max-width: 750px;
+    margin: 40px auto;
+    padding: 35px;
+  }
+
+  .payment-detail-content {
+    max-width: 550px;
+  }
+
+  .whatsapp-content {
+    max-width: 450px;
+  }
+}
+
+@media (max-width: 768px) {
+  .cart-container {
+    margin: 30px 20px;
+    padding: 30px 20px;
+  }
+
+  .cart-container h1 {
+    font-size: 26px;
+    margin-bottom: 25px;
+  }
+
+  .cart-container h1 img {
+    width: 26px;
+  }
+
+  .cart-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 20px;
+  }
+
+  .cart-item img {
+    width: 100%;
+    height: auto;
+    max-width: 200px;
+    align-self: center;
+  }
+
+  .item-details {
+    width: 100%;
+    text-align: center;
+  }
+
+  .item-details h3 {
+    font-size: 16px;
+  }
+
+  .item-details .item-price {
+    font-size: 18px;
+  }
+
+  .item-actions {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .remove-item {
+    width: 100%;
+    justify-content: center;
+    padding: 12px 20px;
+  }
+
+  .cart-summary {
+    padding: 25px;
+  }
+
+  .cart-summary h3 {
+    font-size: 18px;
+  }
+
+  .cart-summary #cart-total {
+    font-size: 30px;
+  }
+
+  #checkout-btn {
+    padding: 12px 32px;
+    font-size: 16px;
+  }
+
+  /* Modal Responsive */
+  .custom-modal-content {
+    width: 90%;
+    padding: 30px 20px;
+  }
+
+  .whatsapp-content,
+  .payment-content {
+    max-width: 100%;
+  }
+
+  .payment-detail-content {
+    max-width: 100%;
+    padding: 30px 20px;
+  }
+
+  .whatsapp-info {
+    padding: 18px;
+  }
+
+  .phone-number {
+    font-size: 20px;
+  }
+
+  .payment-methods {
+    padding: 18px;
+  }
+
+  .payment-method-btn {
+    padding: 12px 16px;
+    font-size: 15px;
+  }
+
+  .qris-image {
+    width: 220px;
+    height: 220px;
+  }
+
+  .upload-label {
+    padding: 30px 15px;
+  }
+
+  .upload-label i {
+    font-size: 40px;
+  }
+
+  .upload-label span {
+    font-size: 14px;
+  }
+
+  #preview-image {
+    max-height: 250px;
+  }
+
+  .payment-detail-actions {
+    flex-direction: column;
+  }
+
+  .btn-secondary,
+  .btn-primary {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .cart-container {
+    margin: 20px 10px;
+    padding: 20px 15px;
+  }
+
+  .cart-container h1 {
+    font-size: 22px;
+    margin-bottom: 20px;
+  }
+
+  .cart-container h1 img {
+    width: 22px;
+  }
+
+  .cart-item {
+    padding: 15px;
+  }
+
+  .cart-item-info h4 {
+    font-size: 18px;
+  }
+
+  .cart-item-info p {
+    font-size: 16px;
+  }
+
+  .remove-item-btn {
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+
+  .cart-summary {
+    padding: 20px;
+  }
+
+  .cart-summary h3 {
+    font-size: 18px;
+  }
+
+  .cart-summary #cart-total {
+    font-size: 24px;
+  }
+
+  #checkout-btn {
+    padding: 12px 28px;
+    font-size: 15px;
+  }
+
+  /* Modal Responsive Mobile */
+  .custom-modal-content {
+    padding: 25px 15px;
+  }
+
+  .custom-modal-icon {
+    font-size: 48px;
+    margin-bottom: 15px;
+  }
+
+  .custom-modal-content h3 {
+    font-size: 22px;
+    margin-bottom: 12px;
+  }
+
+  .custom-modal-content p {
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+
+  .custom-modal-buttons button,
+  .btn-ok {
+    padding: 12px 24px;
+    font-size: 14px;
+  }
+
+  .payment-detail-content {
+    padding: 25px 15px;
+  }
+
+  .payment-detail-header h3 {
+    font-size: 22px;
+  }
+
+  .detail-box label {
+    font-size: 13px;
+  }
+
+  .copy-box input {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+
+  .copy-btn {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+
+  .account-name,
+  .transfer-amount {
+    padding: 10px 12px;
+    font-size: 16px;
+  }
+
+  .transfer-amount {
+    font-size: 20px;
+  }
+
+  .phone-number {
+    font-size: 18px;
+  }
+
+  .whatsapp-info {
+    padding: 15px;
+  }
+
+  .payment-methods {
+    padding: 15px;
+  }
+
+  .payment-methods h4 {
+    font-size: 14px;
+  }
+
+  .payment-method-btn {
+    padding: 12px 15px;
+    font-size: 14px;
+  }
+
+  .payment-method-btn i {
+    font-size: 18px;
+  }
+
+  .qris-image {
+    width: 200px;
+    height: 200px;
+  }
+
+  .qris-info {
+    font-size: 13px;
+  }
+
+  .upload-proof-section {
+    padding: 20px;
+  }
+
+  .upload-proof-section h4 {
+    font-size: 14px;
+    margin-bottom: 15px;
+  }
+
+  .upload-label {
+    padding: 25px 15px;
+  }
+
+  .upload-label i {
+    font-size: 36px;
+    margin-bottom: 12px;
+  }
+
+  .upload-label span {
+    font-size: 13px;
+  }
+
+  .upload-label small {
+    font-size: 11px;
+  }
+
+  #preview-image {
+    max-height: 200px;
+  }
+
+  .btn-secondary,
+  .btn-primary {
+    padding: 12px 20px;
+    font-size: 14px;
+  }
+
+  .btn-whatsapp {
+    padding: 12px 24px;
+    font-size: 14px;
+  }
+}
+
+/* Custom Confirm & Alert Modal */
+.custom-modal {
+  display: none;
+  position: fixed;
+  z-index: 20000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  animation: fadeIn 0.3s ease;
+}
+
+.custom-modal.active {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.custom-modal-content {
+  background: white;
+  border-radius: 20px;
+  padding: 40px;
+  max-width: 450px;
+  width: 90%;
+  text-align: center;
+  animation: popIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.custom-modal-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+  color: #6366f1;
+}
+
+.custom-modal-icon.success-icon {
+  color: #00d4aa;
+}
+
+.custom-modal-content h3 {
+  font-size: 28px;
+  color: #333;
+  margin-bottom: 15px;
+  font-weight: 700;
+}
+
+.custom-modal-content p {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 30px;
+  line-height: 1.6;
+}
+
+.custom-modal-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+.custom-modal-buttons button,
+.btn-ok {
+  padding: 14px 32px;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 120px;
+}
+
+.btn-cancel {
+  background: #f1f3f5;
+  color: #495057;
+}
+
+.btn-cancel:hover {
+  background: #e9ecef;
+  transform: translateY(-2px);
+}
+
+.btn-confirm {
+  background: linear-gradient(135deg, #00d4aa 0%, #00a896 100%);
+  color: white;
+}
+
+.btn-confirm:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 168, 150, 0.4);
+}
+
+.btn-ok {
+  background: linear-gradient(135deg, #00d4aa 0%, #00a896 100%);
+  color: white;
+  width: 100%;
+}
+
+.btn-ok:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 168, 150, 0.4);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes popIn {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* WhatsApp Modal Specific Styles */
+.whatsapp-icon {
+  color: #25D366 !important;
+}
+
+.whatsapp-content {
+  max-width: 500px;
+}
+
+.whatsapp-info {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 12px;
+  margin: 20px 0;
+  text-align: center;
+}
+
+.phone-number {
+  font-size: 24px;
+  font-weight: 700;
+  color: #25D366;
+  margin: 10px 0 0 0;
+}
+
+.btn-whatsapp {
+  background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+  color: white;
+  padding: 14px 32px;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 120px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-whatsapp:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(37, 211, 102, 0.4);
+}
+
+/* Payment Modal Specific Styles */
+.payment-icon {
+  color: #6366f1;
+}
+
+.payment-content {
+  max-width: 550px;
+}
+
+.payment-info {
+  text-align: left;
+}
+
+.payment-total {
+  font-size: 32px;
+  font-weight: 700;
+  color: #00a896;
+  text-align: center;
+  margin: 15px 0 25px 0;
+}
+
+.payment-methods {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 12px;
+  margin-top: 20px;
+}
+
+.payment-methods h4 {
+  font-size: 16px;
+  color: #333;
+  margin: 0 0 15px 0;
+  font-weight: 600;
+}
+
+.payment-method-btn {
+  width: 100%;
+  background: white;
+  border: 2px solid #e9ecef;
+  padding: 15px 20px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.payment-method-btn:last-child {
+  margin-bottom: 0;
+}
+
+.payment-method-btn:hover {
+  border-color: #00d4aa;
+  background: #f0fdf9;
+  transform: translateX(5px);
+}
+
+.payment-method-btn i {
+  font-size: 20px;
+  color: #00a896;
+}
+
+/* Handshake Icon for Negotiation */
+.fa-handshake {
+  color: #f59e0b;
+}
+
+/* Payment Detail Modal */
+.modal-close-payment,
+.modal-close-detail {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.1);
+  border: none;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 24px;
+  color: #666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+.modal-close-payment:hover,
+.modal-close-detail:hover {
+  background: #ff4444;
+  color: white;
+  transform: rotate(90deg);
+}
+
+.payment-detail-content {
+  max-width: 600px;
+  padding: 40px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.payment-detail-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.payment-detail-body {
+  text-align: left;
+}
+
+.payment-section {
+  margin-bottom: 30px;
+}
+
+.detail-box {
+  margin-bottom: 20px;
+}
+
+.detail-box label {
+  display: block;
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.copy-box {
+  display: flex;
+  gap: 10px;
+}
+
+.copy-box input {
+  flex: 1;
+  padding: 12px 15px;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  background: #f8f9fa;
+}
+
+.copy-btn {
+  background: linear-gradient(135deg, #00d4aa 0%, #00a896 100%);
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 16px;
+}
+
+.copy-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 168, 150, 0.3);
+}
+
+.account-name,
+.transfer-amount {
+  font-size: 18px;
+  font-weight: 700;
+  color: #333;
+  margin: 0;
+  padding: 12px 15px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #00d4aa;
+}
+
+.transfer-amount {
+  color: #00a896;
+  font-size: 24px;
+}
+
+/* QRIS Section */
+.qris-container {
+  text-align: center;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+.qris-image {
+  width: 250px;
+  height: 250px;
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  margin-bottom: 15px;
+}
+
+.qris-info {
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+}
+
+/* Upload Proof Section */
+.upload-proof-section {
+  background: #f8f9fa;
+  padding: 25px;
+  border-radius: 12px;
+  margin-top: 25px;
+}
+
+.upload-proof-section h4 {
+  font-size: 16px;
+  color: #333;
+  margin: 0 0 20px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+}
+
+.upload-area {
+  position: relative;
+}
+
+.upload-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  border: 2px dashed #00d4aa;
+  border-radius: 12px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.upload-label:hover {
+  border-color: #00a896;
+  background: #f0fdf9;
+}
+
+.upload-label i {
+  font-size: 48px;
+  color: #00d4aa;
+  margin-bottom: 15px;
+}
+
+.upload-label span {
+  font-size: 16px;
+  color: #333;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.upload-label small {
+  font-size: 12px;
+  color: #999;
+}
+
+#preview-container {
+  position: relative;
+  margin-top: 20px;
+  text-align: center;
+}
+
+#preview-image {
+  max-width: 100%;
+  max-height: 300px;
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.remove-image-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #ff4757;
+  border: none;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  color: white;
+  cursor: pointer;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 10px rgba(255, 71, 87, 0.3);
+}
+
+.remove-image-btn:hover {
+  transform: scale(1.1);
+  background: #e84118;
+}
+
+/* Payment Detail Actions */
+.payment-detail-actions {
+  display: flex;
+  gap: 15px;
+  margin-top: 25px;
+}
+
+.btn-secondary,
+.btn-primary {
+  flex: 1;
+  padding: 14px 24px;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-secondary {
+  background: #f1f3f5;
+  color: #495057;
+}
+
+.btn-secondary:hover {
+  background: #e9ecef;
+  transform: translateY(-2px);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #00d4aa 0%, #00a896 100%);
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 168, 150, 0.4);
+}
+
+.btn-primary:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.btn-primary.enabled {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(0, 212, 170, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(0, 212, 170, 0);
+  }
+}
+
+@media (max-width: 480px) {
+  .cart-item img {
+    width: 100%;
+    max-width: 200px;
+    height: auto;
+  }
+}
+
+/* Animations */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-25px);
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

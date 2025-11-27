@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Beli laptop bekas berkualitas dengan harga terbaik di BAKOELAPTOP. Temukan laptop gaming, bisnis, dan multimedia dari berbagai brand terpercaya.">
+  <meta name="keywords" content="beli laptop bekas, laptop gaming bekas, laptop murah, marketplace laptop">
+  
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Beli Laptop Bekas - BAKOELAPTOP">
+  <meta property="og:description" content="Temukan laptop bekas berkualitas dengan harga terbaik">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  
+  <title>Buy Laptop - BAKOELAPTOP | Beli Laptop Bekas Berkualitas</title>
+  <link rel="stylesheet" href="style/global.css">
+  <link rel="stylesheet" href="style/buy.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="logo">BAKOELAPTOP</div>
+
+    <nav class="main-nav">
+      <a href="index.html">Home</a>
+      <a href="buy.html" class="active">Buy</a>
+      <a href="sell.html">Sell</a>
+      <a href="trade.html">Trade</a>
+      
+      <!-- Auth Buttons (shown when not logged in) -->
+      <div id="auth-buttons" style="display: none; gap: 10px;">
+        <a href="login.html" class="btn-signin">Sign In</a>
+        <a href="register.html" class="btn-signup">Sign Up</a>
+      </div>
+      
+      <!-- User Menu (shown when logged in) -->
+      <div id="user-menu" style="display: none; gap: 15px; align-items: center;">
+        <a href="cart.html"><img src="https://cdn-icons-png.flaticon.com/512/34/34568.png" alt="Cart" style="width:24px; vertical-align: middle;"></a>
+        <div class="profile-menu">
+          <img src="https://cdn-icons-png.flaticon.com/512/1077/1077114.png" alt="Profile" style="width:24px; vertical-align: middle; cursor:pointer;">
+          <ul class="dropdown">
+            <li><a href="profile.html">My Account</a></li>
+            <li><a href="#" id="logout-btn">Logout</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Product Section -->
+  <section class="products-section">
+    <h2>Available Gadgets</h2>
+    
+    <!-- Search and Filter Bar -->
+    <div class="search-filter-container">
+      <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" id="search-input" placeholder="Cari laptop atau handphone...">
+      </div>
+      <div class="filter-controls">
+        <select id="sort-select" class="filter-select">
+          <option value="default">Urutkan</option>
+          <option value="price-low">Harga: Rendah ke Tinggi</option>
+          <option value="price-high">Harga: Tinggi ke Rendah</option>
+          <option value="name-asc">Nama: A-Z</option>
+          <option value="name-desc">Nama: Z-A</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Results Info -->
+    <div class="results-info">
+      <p id="results-count">Menampilkan <strong>0</strong> produk</p>
+    </div>
+    
+    <!-- Category Filter (keep for visual) -->
+    <div class="category-filter">
+      <button class="filter-btn active" data-category="all">
+        <i class="fas fa-th"></i> Semua Produk
+      </button>
+      <button class="filter-btn" data-category="laptop">
+        <i class="fas fa-laptop"></i> Laptop
+      </button>
+      <button class="filter-btn" data-category="handphone">
+        <i class="fas fa-mobile-alt"></i> Handphone
+      </button>
+    </div>
+
+    <div class="product-container" id="product-container">
+      <!-- Products will be loaded from Firestore -->
+      <div class="loading-products" style="grid-column: 1/-1; text-align: center; padding: 40px;">
+        <i class="fas fa-spinner fa-spin" style="font-size: 48px; color: #00d4aa;"></i>
+        <p style="margin-top: 20px; font-size: 18px; color: #666;">Loading products...</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Product Detail Modal -->
+  <div id="product-modal" class="modal">
+    <div class="modal-content">
+      <span class="modal-close">&times;</span>
+      <div class="modal-body">
+        <div class="modal-image">
+          <img id="modal-img" src="" alt="Product Image">
+        </div>
+        <div class="modal-info">
+          <h2 id="modal-title">Product Name</h2>
+          <p class="modal-price" id="modal-price">Rp 0</p>
+          <div class="modal-specs">
+            <h3><i class="fas fa-laptop"></i> Specifications</h3>
+            <p id="modal-specs"></p>
+          </div>
+          <div class="modal-description">
+            <h3><i class="fas fa-file-alt"></i> Description</h3>
+            <p id="modal-desc"></p>
+          </div>
+          <button id="modal-add-cart" class="modal-add-to-cart">
+            <i class="fas fa-shopping-cart"></i> Add to Cart
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Confirm Modal -->
+  <div id="custom-confirm" class="custom-modal">
+    <div class="custom-modal-content">
+      <div class="custom-modal-icon">
+        <i class="fas fa-question-circle"></i>
+      </div>
+      <h3 id="confirm-title">Konfirmasi</h3>
+      <p id="confirm-message">Apakah Anda yakin?</p>
+      <div class="custom-modal-buttons">
+        <button id="confirm-cancel" class="btn-cancel">Batal</button>
+        <button id="confirm-yes" class="btn-confirm">Ya, Lanjutkan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Alert Modal -->
+  <div id="custom-alert" class="custom-modal">
+    <div class="custom-modal-content alert-content">
+      <div class="custom-modal-icon success-icon">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <h3 id="alert-title">Berhasil!</h3>
+      <p id="alert-message">Operasi berhasil dilakukan</p>
+      <button id="alert-ok" class="btn-ok">OK</button>
+    </div>
+  </div>
+
+  <!-- SCRIPT DITEMPATKAN DI PALING BAWAH -->
+  <script>
+    // === LOAD PRODUCTS FROM FIRESTORE ===
+    let allProductCards = [];
+    
+    async function loadProductsFromFirestore() {
+      const container = document.getElementById('product-container');
+      const loadingDiv = container.querySelector('.loading-products');
+      
+      try {
+        console.log('🔄 Loading products from Firestore...');
+        console.log('🆕 USING NEW QUERY (status only) - v2.0');
+        
+        // Get products from Firestore - only approved and not sold
+        // Note: Using single where clause to avoid composite index requirement
+        const productsSnapshot = await window.firebaseDB.collection('products')
+          .where('status', '==', 'approved')
+          .orderBy('createdAt', 'desc')
+          .get();
+        
+        // Clear loading indicator
+        if (loadingDiv) loadingDiv.remove();
+        
+        if (productsSnapshot.empty) {
+          container.innerHTML = `
+            <div style="grid-column: 1/-1; text-align: center; padding: 40px;">
+              <i class="fas fa-inbox" style="font-size: 64px; color: #ccc;"></i>
+              <p style="margin-top: 20px; font-size: 18px; color: #666;">Belum ada produk tersedia</p>
+            </div>
+          `;
+          return;
+        }
+        
+        console.log(`✅ Found ${productsSnapshot.size} approved products from Firestore`);
+        
+        // Clear container
+        container.innerHTML = '';
+        
+        // Filter and render products (only not sold)
+        let displayedCount = 0;
+        productsSnapshot.forEach((doc) => {
+          const product = doc.data();
+          product.id = doc.id;
+          
+          // Skip sold products
+          if (product.sold === true) {
+            console.log(`⏭️ Skipping sold product: ${product.name}`);
+            return;
+          }
+          
+          const productCard = createProductCard(product);
+          container.appendChild(productCard);
+          displayedCount++;
+        });
+        
+        console.log(`✅ Displayed ${displayedCount} available products`);
+        
+        // If no products after filtering
+        if (displayedCount === 0) {
+          container.innerHTML = `
+            <div style="grid-column: 1/-1; text-align: center; padding: 40px;">
+              <i class="fas fa-inbox" style="font-size: 64px; color: #ccc;"></i>
+              <p style="margin-top: 20px; font-size: 18px; color: #666;">Belum ada produk tersedia</p>
+            </div>
+          `;
+          return;
+        }
+        
+        // Update allProductCards reference for filters
+        allProductCards = document.querySelectorAll('.product-card');
+        
+        // Reinitialize event listeners
+        initializeProductEvents();
+        updateResultsCount();
+        
+      } catch (error) {
+        console.error('❌ Error loading products:', error);
+        if (loadingDiv) loadingDiv.remove();
+        container.innerHTML = `
+          <div style="grid-column: 1/-1; text-align: center; padding: 40px;">
+            <i class="fas fa-exclamation-circle" style="font-size: 64px; color: #ff6b6b;"></i>
+            <p style="margin-top: 20px; font-size: 18px; color: #666;">Gagal memuat produk</p>
+            <p style="color: #999;">${error.message}</p>
+          </div>
+        `;
+      }
+    }
+    
+    // Create product card HTML
+    function createProductCard(product) {
+      const card = document.createElement('div');
+      card.className = 'product-card';
+      
+      // Normalize category - treat gaming/business/student as laptop
+      let normalizedCategory = product.category?.toLowerCase() || 'laptop';
+      if (['gaming', 'business', 'student'].includes(normalizedCategory)) {
+        normalizedCategory = 'laptop';
+      }
+      card.setAttribute('data-category', normalizedCategory);
+      
+      // Determine badge style and name based on category
+      const isHandphone = normalizedCategory === 'handphone' || normalizedCategory === 'phone';
+      const categoryBadge = isHandphone ? 'phone-badge' : 'laptop-badge';
+      const categoryName = isHandphone ? 'Handphone' : 'Laptop';
+      
+      card.innerHTML = `
+        <span class="category-badge ${categoryBadge}">${categoryName}</span>
+        <img src="${product.imageURL || 'https://via.placeholder.com/300x200/00d4aa/ffffff?text=Product'}" 
+             alt="${product.name}" 
+             onerror="this.src='https://via.placeholder.com/300x200/00d4aa/ffffff?text=${encodeURIComponent(product.name)}'">
+        <h3>${product.name}</h3>
+        <p>${product.specs}</p>
+        <span class="price">${formatCurrency(product.price)}</span>
+        ${product.sold ? '<span class="stock-badge">SOLD</span>' : ''}
+        <div class="card-buttons">
+          <button class="view-details-btn" 
+            data-id="${product.id}"
+            data-product-id="${product.id}"
+            data-name="${product.name}" 
+            data-price="${product.price}"
+            data-category="${product.category}"
+            data-specs="${product.specs}"
+            data-desc="${product.description || product.specs}"
+            data-img="${product.imageURL}">
+            <i class="fas fa-info-circle"></i> View Details
+          </button>
+          <button class="add-to-cart" 
+            data-id="${product.id}"
+            data-product-id="${product.id}"
+            data-name="${product.name}" 
+            data-price="${product.price}" 
+            data-img="${product.imageURL}"
+            ${product.sold ? 'disabled' : ''}>
+            <i class="fas fa-shopping-cart"></i> Add to Cart
+          </button>
+        </div>
+      `;
+      
+      return card;
+    }
+    
+    // === SEARCH & FILTER FUNCTIONALITY ===
+    const searchInput = document.getElementById('search-input');
+    const sortSelect = document.getElementById('sort-select');
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const resultsCount = document.getElementById('results-count');
+
+    let currentCategory = 'all';
+    let currentSort = 'default';
+
+    // Update results count
+    function updateResultsCount() {
+      // Always get fresh reference
+      const productCards = document.querySelectorAll('.product-card');
+      // Count cards that should be visible (not hidden by filter)
+      const visibleCards = Array.from(productCards).filter(card => 
+        !card.classList.contains('hidden')
+      );
+      resultsCount.innerHTML = `Menampilkan <strong>${visibleCards.length}</strong> produk`;
+    }
+
+    // Filter and search products
+    function filterProducts() {
+      // Always get fresh reference to product cards
+      allProductCards = document.querySelectorAll('.product-card');
+      
+      const searchTerm = searchInput.value.toLowerCase();
+      let visibleCount = 0;
+
+      allProductCards.forEach((card, index) => {
+        const cardCategory = card.getAttribute('data-category');
+        const cardName = card.querySelector('h3').textContent.toLowerCase();
+        const cardDesc = card.querySelector('p').textContent.toLowerCase();
+        
+        const matchesCategory = currentCategory === 'all' || cardCategory === currentCategory;
+        const matchesSearch = searchTerm === '' || 
+                            cardName.includes(searchTerm) || 
+                            cardDesc.includes(searchTerm);
+        
+        if (matchesCategory && matchesSearch) {
+          visibleCount++;
+          card.classList.remove('hidden');
+          setTimeout(() => {
+            card.classList.add('visible');
+            card.style.display = 'block';
+          }, index * 30);
+        } else {
+          card.classList.add('hidden');
+          card.classList.remove('visible');
+          card.style.display = 'none';
+        }
+      });
+
+      console.log(`Filter: category="${currentCategory}", total=${allProductCards.length}, visible=${visibleCount}`);
+
+      // Update count immediately based on class, not style.display
+      updateResultsCount();
+
+      // Apply sorting to visible cards
+      if (currentSort !== 'default') {
+        const visibleCards = Array.from(allProductCards).filter(card => 
+          !card.classList.contains('hidden')
+        );
+        if (visibleCards.length > 0) {
+          sortProducts(visibleCards);
+        }
+      }
+    }
+
+    // Sort products
+    function sortProducts(cards) {
+      const container = document.querySelector('.product-container');
+      const cardsArray = cards || Array.from(allProductCards).filter(card => 
+        card.style.display !== 'none'
+      );
+
+      cardsArray.sort((a, b) => {
+        const priceA = parseInt(a.querySelector('.price').textContent.replace(/\D/g, ''));
+        const priceB = parseInt(b.querySelector('.price').textContent.replace(/\D/g, ''));
+        const nameA = a.querySelector('h3').textContent;
+        const nameB = b.querySelector('h3').textContent;
+
+        switch(currentSort) {
+          case 'price-low':
+            return priceA - priceB;
+          case 'price-high':
+            return priceB - priceA;
+          case 'name-asc':
+            return nameA.localeCompare(nameB);
+          case 'name-desc':
+            return nameB.localeCompare(nameA);
+          default:
+            return 0;
+        }
+      });
+
+      cardsArray.forEach(card => container.appendChild(card));
+    }
+
+    // Search input listener
+    searchInput.addEventListener('input', filterProducts);
+
+    // Sort select listener
+    sortSelect.addEventListener('change', (e) => {
+      currentSort = e.target.value;
+      filterProducts();
+    });
+
+    // === CATEGORY FILTER BUTTONS ===
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const category = btn.getAttribute('data-category');
+        currentCategory = category;
+        
+        // Update active button
+        filterBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        filterProducts();
+      });
+    });
+
+    // Initialize results count
+    updateResultsCount();
+
+    // === CUSTOM MODAL FUNCTIONS ===
+    function showCustomConfirm(message, onConfirm) {
+      const confirmModal = document.getElementById('custom-confirm');
+      const confirmMessage = document.getElementById('confirm-message');
+      const confirmYes = document.getElementById('confirm-yes');
+      const confirmCancel = document.getElementById('confirm-cancel');
+
+      confirmMessage.textContent = message;
+      confirmModal.classList.add('active');
+
+      // Remove old listeners
+      const newYesBtn = confirmYes.cloneNode(true);
+      const newCancelBtn = confirmCancel.cloneNode(true);
+      confirmYes.parentNode.replaceChild(newYesBtn, confirmYes);
+      confirmCancel.parentNode.replaceChild(newCancelBtn, confirmCancel);
+
+      // Add new listeners
+      newYesBtn.addEventListener('click', () => {
+        confirmModal.classList.remove('active');
+        onConfirm();
+      });
+
+      newCancelBtn.addEventListener('click', () => {
+        confirmModal.classList.remove('active');
+      });
+    }
+
+    function showCustomAlert(message, title = 'Berhasil!') {
+      const alertModal = document.getElementById('custom-alert');
+      const alertTitle = document.getElementById('alert-title');
+      const alertMessage = document.getElementById('alert-message');
+      const alertOk = document.getElementById('alert-ok');
+
+      alertTitle.textContent = title;
+      alertMessage.textContent = message;
+      alertModal.classList.add('active');
+
+      // Remove old listener
+      const newOkBtn = alertOk.cloneNode(true);
+      alertOk.parentNode.replaceChild(newOkBtn, alertOk);
+
+      // Add new listener
+      newOkBtn.addEventListener('click', () => {
+        alertModal.classList.remove('active');
+      });
+    }
+
+    // === MODAL FUNCTIONALITY ===
+    const modal = document.getElementById('product-modal');
+    const modalClose = document.querySelector('.modal-close');
+    const viewDetailsBtns = document.querySelectorAll('.view-details-btn');
+    const modalImg = document.getElementById('modal-img');
+    const modalTitle = document.getElementById('modal-title');
+    const modalPrice = document.getElementById('modal-price');
+    const modalSpecs = document.getElementById('modal-specs');
+    const modalDesc = document.getElementById('modal-desc');
+    const modalAddCart = document.getElementById('modal-add-cart');
+
+    // Open modal when View Details is clicked
+    viewDetailsBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const productId = btn.getAttribute('data-product-id');
+        const name = btn.getAttribute('data-name');
+        const price = btn.getAttribute('data-price');
+        const specs = btn.getAttribute('data-specs');
+        const desc = btn.getAttribute('data-desc');
+        const img = btn.getAttribute('data-img');
+
+        // Populate modal
+        modalImg.src = img;
+        modalTitle.textContent = name;
+        modalPrice.textContent = `Rp ${parseInt(price).toLocaleString('id-ID')}`;
+        modalSpecs.textContent = specs;
+        modalDesc.textContent = desc;
+
+        // Store data for add to cart
+        modalAddCart.setAttribute('data-product-id', productId);
+        modalAddCart.setAttribute('data-name', name);
+        modalAddCart.setAttribute('data-price', price);
+
+        // Show modal
+        modal.classList.add('active');
+      });
+    });
+
+    // Close modal
+    modalClose.addEventListener('click', () => {
+      modal.classList.remove('active');
+    });
+
+    // Close modal when clicking outside
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.classList.remove('active');
+      }
+    });
+
+    // === ADD TO CART FUNCTIONALITY ===
+    // addToCart function is now in cart.js (Firebase-based)
+
+    // Add to cart from product cards
+    const addToCartBtns = document.querySelectorAll('.product-card .add-to-cart');
+    addToCartBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const productId = btn.getAttribute('data-product-id');
+        const name = btn.getAttribute('data-name');
+        const price = parseInt(btn.getAttribute('data-price'));
+        const productCard = btn.closest('.product-card');
+        const image = productCard.querySelector('img').src;
+        addToCart(productId, name, price, image);
+      });
+    });
+
+    // Add to cart from modal
+    modalAddCart.addEventListener('click', async () => {
+      const productId = modalAddCart.getAttribute('data-product-id');
+      const name = modalAddCart.getAttribute('data-name');
+      const price = parseInt(modalAddCart.getAttribute('data-price'));
+      const image = modalImg.src;
+      
+      // Disable button and show loading
+      const originalHTML = modalAddCart.innerHTML;
+      modalAddCart.disabled = true;
+      modalAddCart.style.opacity = '0.6';
+      modalAddCart.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adding...';
+      
+      try {
+        await addToCart(productId, name, price, image);
+        // Close modal after successful add
+        modal.classList.remove('active');
+      } finally {
+        // Re-enable button
+        setTimeout(() => {
+          modalAddCart.disabled = false;
+          modalAddCart.style.opacity = '1';
+          modalAddCart.innerHTML = originalHTML;
+        }, 1000);
+      }
+    });
+    
+    // === HELPER FUNCTIONS ===
+    function formatCurrency(number) {
+      return 'Rp ' + new Intl.NumberFormat('id-ID').format(number);
+    }
+    
+    // === INITIALIZE PRODUCT EVENTS ===
+    function initializeProductEvents() {
+      // Reinitialize View Details buttons
+      const viewDetailsBtns = document.querySelectorAll('.view-details-btn');
+      viewDetailsBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const productId = btn.getAttribute('data-product-id');
+          const name = btn.getAttribute('data-name');
+          const price = btn.getAttribute('data-price');
+          const specs = btn.getAttribute('data-specs');
+          const desc = btn.getAttribute('data-desc');
+          const img = btn.getAttribute('data-img');
+
+          modalImg.src = img;
+          modalTitle.textContent = name;
+          modalPrice.textContent = formatCurrency(price);
+          modalSpecs.textContent = specs;
+          modalDesc.textContent = desc;
+          modalAddCart.setAttribute('data-product-id', productId);
+          modalAddCart.setAttribute('data-name', name);
+          modalAddCart.setAttribute('data-price', price);
+
+          modal.classList.add('active');
+        });
+      });
+
+      // Reinitialize Add to Cart buttons
+      const addToCartBtns = document.querySelectorAll('.product-card .add-to-cart');
+      addToCartBtns.forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const productId = btn.getAttribute('data-product-id');
+          const name = btn.getAttribute('data-name');
+          const price = parseInt(btn.getAttribute('data-price'));
+          const productCard = btn.closest('.product-card');
+          const image = productCard.querySelector('img').src;
+          
+          // Disable button and show loading
+          const originalHTML = btn.innerHTML;
+          btn.disabled = true;
+          btn.style.opacity = '0.6';
+          btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adding...';
+          
+          try {
+            await addToCart(productId, name, price, image);
+          } finally {
+            // Re-enable button after operation
+            setTimeout(() => {
+              btn.disabled = false;
+              btn.style.opacity = '1';
+              btn.innerHTML = originalHTML;
+            }, 1000);
+          }
+        });
+      });
+    }
+    
+    // === INITIALIZE ON PAGE LOAD ===
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Wait for Firebase to be ready
+      const waitForFirebase = setInterval(() => {
+        if (window.firebaseDB) {
+          clearInterval(waitForFirebase);
+          console.log('✅ Firebase ready, loading products...');
+          loadProductsFromFirestore();
+        }
+      }, 100);
+    });
+  </script>
+
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-contact">
+        <div class="footer-contact-item">
+          <i class="fab fa-whatsapp"></i>
+          <a href="https://wa.me/6285749406558" target="_blank">+62 857-4940-6558</a>
+        </div>
+        <div class="footer-contact-item">
+          <i class="fab fa-instagram"></i>
+          <a href="https://www.instagram.com/bakoelaptop/" target="_blank">@bakoelaptop</a>
+        </div>
+      </div>
+      <div class="footer-divider"></div>
+      <p class="footer-copyright">&copy; 2025 BAKOELAPTOP. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+  <!-- Firebase Config & Services -->
+  <script src="firebase-config.js"></script>
+  <script src="script/utils.js"></script>
+  <script src="firebase-auth.js"></script>
+  <script src="firebase-db.js"></script>
+  <script src="script/cart.js"></script>
+  <script src="script/navbar.js"></script>
+</body>
+</html>

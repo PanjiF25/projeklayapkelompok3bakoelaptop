@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Update Firestore Security Rules - BAKOELAPTOP</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+      font-size: 32px;
+    }
+
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 16px;
+    }
+
+    .warning {
+      background: #fff3cd;
+      border-left: 4px solid #ffc107;
+      padding: 15px 20px;
+      margin-bottom: 30px;
+      border-radius: 8px;
+    }
+
+    .warning strong {
+      color: #856404;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .success {
+      background: #d4edda;
+      border-left: 4px solid #28a745;
+      padding: 15px 20px;
+      margin-bottom: 30px;
+      border-radius: 8px;
+      display: none;
+    }
+
+    .success strong {
+      color: #155724;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .steps {
+      background: #f8f9fa;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 30px;
+    }
+
+    .steps h2 {
+      color: #333;
+      font-size: 20px;
+      margin-bottom: 15px;
+    }
+
+    .steps ol {
+      margin-left: 20px;
+    }
+
+    .steps li {
+      margin-bottom: 10px;
+      color: #555;
+      line-height: 1.6;
+    }
+
+    .steps a {
+      color: #667eea;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .steps a:hover {
+      text-decoration: underline;
+    }
+
+    .rules-container {
+      position: relative;
+      margin-bottom: 30px;
+    }
+
+    .rules-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .rules-header h2 {
+      color: #333;
+      font-size: 20px;
+    }
+
+    .copy-btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 10px 25px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .copy-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .copy-btn.copied {
+      background: #28a745;
+    }
+
+    pre {
+      background: #282c34;
+      color: #abb2bf;
+      padding: 20px;
+      border-radius: 10px;
+      overflow-x: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      max-height: 500px;
+      overflow-y: auto;
+    }
+
+    .keyword { color: #c678dd; }
+    .function { color: #61afef; }
+    .string { color: #98c379; }
+    .comment { color: #5c6370; font-style: italic; }
+    .operator { color: #56b6c2; }
+
+    .buttons {
+      display: flex;
+      gap: 15px;
+      margin-top: 30px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 15px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      text-align: center;
+      display: block;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-secondary {
+      background: #6c757d;
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: #5a6268;
+      transform: translateY(-2px);
+    }
+
+    .note {
+      background: #e7f3ff;
+      border-left: 4px solid #2196F3;
+      padding: 15px 20px;
+      margin-top: 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      color: #0c5687;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔐 Update Firestore Security Rules</h1>
+    <p class="subtitle">Firestore Security Rules untuk BAKOELAPTOP Marketplace</p>
+
+    <div class="warning">
+      <strong>⚠️ PENTING!</strong>
+      Error "Missing or insufficient permissions" terjadi karena Firestore Security Rules belum di-update. Ikuti langkah di bawah untuk memperbaikinya.
+    </div>
+
+    <div class="success" id="success-message">
+      <strong>✅ Rules Berhasil Disalin!</strong>
+      Sekarang paste di Firebase Console dan klik "Publish".
+    </div>
+
+    <div class="steps">
+      <h2>📋 Langkah-langkah Update Rules:</h2>
+      <ol>
+        <li>Klik tombol <strong>"Copy Rules"</strong> di bawah</li>
+        <li>Buka <a href="https://console.firebase.google.com" target="_blank">Firebase Console</a></li>
+        <li>Pilih project <strong>BAKOELAPTOP</strong></li>
+        <li>Klik <strong>Firestore Database</strong> di sidebar kiri</li>
+        <li>Klik tab <strong>Rules</strong></li>
+        <li><strong>Hapus semua</strong> rules yang lama</li>
+        <li><strong>Paste</strong> rules yang sudah di-copy</li>
+        <li>Klik tombol <strong>"Publish"</strong></li>
+        <li>Tunggu beberapa detik sampai rules aktif</li>
+        <li>Kembali ke admin dashboard dan coba tambah produk lagi</li>
+      </ol>
+    </div>
+
+    <div class="rules-container">
+      <div class="rules-header">
+        <h2>📝 Firestore Security Rules</h2>
+        <button class="copy-btn" onclick="copyRules()">
+          <span id="copy-icon">📋</span>
+          <span id="copy-text">Copy Rules</span>
+        </button>
+      </div>
+
+      <pre id="rules-code"><span class="keyword">rules_version</span> = <span class="string">'2'</span>;
+<span class="keyword">service</span> cloud.firestore {
+  <span class="keyword">match</span> /databases/{database}/documents {
+    
+    <span class="comment">// Helper function: check if user is authenticated</span>
+    <span class="keyword">function</span> <span class="function">isSignedIn</span>() {
+      <span class="keyword">return</span> request.auth != <span class="keyword">null</span>;
+    }
+    
+    <span class="comment">// Helper function: check if user is admin</span>
+    <span class="keyword">function</span> <span class="function">isAdmin</span>() {
+      <span class="keyword">return</span> <span class="function">isSignedIn</span>() && 
+             <span class="function">get</span>(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == <span class="string">'admin'</span>;
+    }
+    
+    <span class="comment">// Helper function: check if user owns the document</span>
+    <span class="keyword">function</span> <span class="function">isOwner</span>(userId) {
+      <span class="keyword">return</span> <span class="function">isSignedIn</span>() && request.auth.uid == userId;
+    }
+
+    <span class="comment">// Users Collection</span>
+    <span class="keyword">match</span> /users/{userId} {
+      <span class="comment">// Anyone can read user profiles</span>
+      allow read: <span class="keyword">if</span> <span class="keyword">true</span>;
+      
+      <span class="comment">// Users can only create/update their own profile</span>
+      allow create: <span class="keyword">if</span> <span class="function">isSignedIn</span>() && request.auth.uid == userId;
+      allow update: <span class="keyword">if</span> <span class="function">isOwner</span>(userId) || <span class="function">isAdmin</span>();
+      
+      <span class="comment">// Only admin can delete users</span>
+      allow delete: <span class="keyword">if</span> <span class="function">isAdmin</span>();
+    }
+
+    <span class="comment">// Products Collection</span>
+    <span class="keyword">match</span> /products/{productId} {
+      <span class="comment">// Anyone can read APPROVED products, admin can read all</span>
+      allow read: <span class="keyword">if</span> resource.data.status == <span class="string">'approved'</span> || <span class="function">isAdmin</span>();
+      
+      <span class="comment">// Only authenticated users can create products</span>
+      <span class="comment">// Regular users: products start with status 'pending'</span>
+      <span class="comment">// Admin: can create products with status 'approved' OR 'pending'</span>
+      allow create: <span class="keyword">if</span> <span class="function">isSignedIn</span>() && 
+                      request.resource.data.sellerId == request.auth.uid &&
+                      (request.resource.data.status == <span class="string">'pending'</span> || 
+                       (<span class="function">isAdmin</span>() && request.resource.data.status == <span class="string">'approved'</span>));
+      
+      <span class="comment">// Only product owner can update their own products (but NOT status field)</span>
+      <span class="comment">// Only admin can update any field including status</span>
+      allow update: <span class="keyword">if</span> (<span class="function">isOwner</span>(resource.data.sellerId) && 
+                        request.resource.data.status == resource.data.status) ||
+                       <span class="function">isAdmin</span>();
+      
+      <span class="comment">// Only admin or product owner can delete products</span>
+      allow delete: <span class="keyword">if</span> <span class="function">isAdmin</span>() || <span class="function">isOwner</span>(resource.data.sellerId);
+    }
+
+    <span class="comment">// Carts Collection (per-user)</span>
+    <span class="keyword">match</span> /carts/{userId} {
+      <span class="comment">// Users can only read/write their own cart</span>
+      allow read, write: <span class="keyword">if</span> <span class="function">isOwner</span>(userId);
+    }
+
+    <span class="comment">// Orders Collection</span>
+    <span class="keyword">match</span> /orders/{orderId} {
+      <span class="comment">// Users can read their own orders, admin can read all</span>
+      allow read: <span class="keyword">if</span> <span class="function">isOwner</span>(resource.data.userId) || <span class="function">isAdmin</span>();
+      
+      <span class="comment">// Users can create their own orders</span>
+      allow create: <span class="keyword">if</span> <span class="function">isSignedIn</span>() && request.resource.data.userId == request.auth.uid;
+      
+      <span class="comment">// Only admin can update orders</span>
+      allow update: <span class="keyword">if</span> <span class="function">isAdmin</span>();
+      
+      <span class="comment">// Only admin can delete orders</span>
+      allow delete: <span class="keyword">if</span> <span class="function">isAdmin</span>();
+    }
+  }
+}</pre>
+    </div>
+
+    <div class="note">
+      <strong>💡 Catatan:</strong><br>
+      • Rules ini mengizinkan admin membuat produk dengan status "approved" langsung<br>
+      • User biasa hanya bisa membuat produk dengan status "pending"<br>
+      • Setiap user hanya bisa edit/delete produk mereka sendiri<br>
+      • Admin bisa edit/delete semua produk<br>
+      • Cart hanya bisa diakses oleh pemiliknya
+    </div>
+
+    <div class="buttons">
+      <button class="btn btn-primary" onclick="copyRulesAndRedirect()">
+        Copy Rules & Buka Firebase Console
+      </button>
+      <a href="admin.html" class="btn btn-secondary">Kembali ke Admin Dashboard</a>
+    </div>
+  </div>
+
+  <script>
+    const rulesText = `rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function: check if user is authenticated
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    // Helper function: check if user is admin
+    function isAdmin() {
+      return isSignedIn() && 
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    // Helper function: check if user owns the document
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Users Collection
+    match /users/{userId} {
+      // Anyone can read user profiles
+      allow read: if true;
+      
+      // Users can only create/update their own profile
+      allow create: if isSignedIn() && request.auth.uid == userId;
+      allow update: if isOwner(userId) || isAdmin();
+      
+      // Only admin can delete users
+      allow delete: if isAdmin();
+    }
+
+    // Products Collection
+    match /products/{productId} {
+      // Anyone can read APPROVED products, admin can read all
+      allow read: if resource.data.status == 'approved' || isAdmin();
+      
+      // Only authenticated users can create products
+      // Regular users: products start with status 'pending'
+      // Admin: can create products with status 'approved' OR 'pending'
+      allow create: if isSignedIn() && 
+                      request.resource.data.sellerId == request.auth.uid &&
+                      (request.resource.data.status == 'pending' || 
+                       (isAdmin() && request.resource.data.status == 'approved'));
+      
+      // Only product owner can update their own products (but NOT status field)
+      // Only admin can update any field including status
+      allow update: if (isOwner(resource.data.sellerId) && 
+                        request.resource.data.status == resource.data.status) ||
+                       isAdmin();
+      
+      // Only admin or product owner can delete products
+      allow delete: if isAdmin() || isOwner(resource.data.sellerId);
+    }
+
+    // Carts Collection (per-user)
+    match /carts/{userId} {
+      // Users can only read/write their own cart
+      allow read, write: if isOwner(userId);
+    }
+
+    // Orders Collection
+    match /orders/{orderId} {
+      // Users can read their own orders, admin can read all
+      allow read: if isOwner(resource.data.userId) || isAdmin();
+      
+      // Users can create their own orders
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      
+      // Only admin can update orders
+      allow update: if isAdmin();
+      
+      // Only admin can delete orders
+      allow delete: if isAdmin();
+    }
+  }
+}`;
+
+    function copyRules() {
+      navigator.clipboard.writeText(rulesText).then(() => {
+        const btn = document.querySelector('.copy-btn');
+        const icon = document.getElementById('copy-icon');
+        const text = document.getElementById('copy-text');
+        
+        btn.classList.add('copied');
+        icon.textContent = '✅';
+        text.textContent = 'Copied!';
+        
+        document.getElementById('success-message').style.display = 'block';
+        
+        setTimeout(() => {
+          btn.classList.remove('copied');
+          icon.textContent = '📋';
+          text.textContent = 'Copy Rules';
+        }, 3000);
+      }).catch(err => {
+        alert('Gagal copy. Silakan copy manual dari kotak di atas.');
+        console.error('Copy error:', err);
+      });
+    }
+
+    function copyRulesAndRedirect() {
+      copyRules();
+      setTimeout(() => {
+        window.open('https://console.firebase.google.com', '_blank');
+      }, 500);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Firebase Test - BAKOELAPTOP</title>
+  <link rel="stylesheet" href="style/loading.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      background: linear-gradient(135deg, #00d4aa 0%, #00a896 100%);
+    }
+    .test-container {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    h1 {
+      color: #00a896;
+      margin-bottom: 20px;
+    }
+    .status {
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 8px;
+      font-weight: bold;
+    }
+    .status.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .status.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    .status.info {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+    button {
+      background: linear-gradient(135deg, #00d4aa 0%, #00a896 100%);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 5px;
+      transition: all 0.3s ease;
+    }
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0,212,170,0.4);
+    }
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+    .test-section {
+      margin: 20px 0;
+      padding: 20px;
+      border: 2px solid #eee;
+      border-radius: 10px;
+    }
+    .test-section h3 {
+      color: #00a896;
+      margin-bottom: 15px;
+    }
+    code {
+      background: #f5f5f5;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <div class="test-container">
+    <h1>🔥 Firebase Connection Test</h1>
+    
+    <div id="connection-status"></div>
+
+    <!-- Test 1: Check Firebase Services -->
+    <div class="test-section">
+      <h3>Test 1: Firebase Services Status</h3>
+      <div id="services-status"></div>
+      <button onclick="checkFirebaseServices()">Check Services</button>
+    </div>
+
+    <!-- Test 2: Test Registration -->
+    <div class="test-section">
+      <h3>Test 2: User Registration</h3>
+      <input type="text" id="test-fullname" placeholder="Full Name" value="Test User">
+      <input type="text" id="test-username" placeholder="Username" value="testuser">
+      <input type="email" id="test-email" placeholder="Email" value="test@example.com">
+      <input type="tel" id="test-phone" placeholder="Phone" value="08123456789">
+      <input type="password" id="test-password" placeholder="Password" value="test123456">
+      <div id="register-result"></div>
+      <button onclick="testRegister()">Test Register</button>
+    </div>
+
+    <!-- Test 3: Test Login -->
+    <div class="test-section">
+      <h3>Test 3: User Login</h3>
+      <input type="email" id="login-email" placeholder="Email" value="test@example.com">
+      <input type="password" id="login-password" placeholder="Password" value="test123456">
+      <div id="login-result"></div>
+      <button onclick="testLogin()">Test Login</button>
+    </div>
+
+    <!-- Test 4: Check Auth State -->
+    <div class="test-section">
+      <h3>Test 4: Current Auth State</h3>
+      <div id="auth-state"></div>
+      <button onclick="checkAuthState()">Check Auth State</button>
+      <button onclick="testLogout()">Test Logout</button>
+    </div>
+
+    <!-- Test 5: Firestore Test -->
+    <div class="test-section">
+      <h3>Test 5: Firestore Connection</h3>
+      <div id="firestore-result"></div>
+      <button onclick="testFirestore()">Test Firestore</button>
+    </div>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+  <!-- Firebase Config & Services -->
+  <script src="firebase-config.js"></script>
+  <script src="script/utils.js"></script>
+  <script src="firebase-auth.js"></script>
+  <script src="firebase-db.js"></script>
+
+  <script>
+    // Display connection status
+    window.addEventListener('load', () => {
+      const statusDiv = document.getElementById('connection-status');
+      if (window.firebaseAuth && window.firebaseDB) {
+        statusDiv.innerHTML = '<div class="status success">✅ Firebase Connected Successfully!</div>';
+      } else {
+        statusDiv.innerHTML = '<div class="status error">❌ Firebase Connection Failed</div>';
+      }
+    });
+
+    // Test 1: Check Firebase Services
+    function checkFirebaseServices() {
+      const resultDiv = document.getElementById('services-status');
+      let html = '';
+      
+      html += `<div class="status ${window.firebaseApp ? 'success' : 'error'}">
+        ${window.firebaseApp ? '✅' : '❌'} Firebase App: ${window.firebaseApp ? 'Initialized' : 'Not Found'}
+      </div>`;
+      
+      html += `<div class="status ${window.firebaseAuth ? 'success' : 'error'}">
+        ${window.firebaseAuth ? '✅' : '❌'} Firebase Auth: ${window.firebaseAuth ? 'Ready' : 'Not Found'}
+      </div>`;
+      
+      html += `<div class="status ${window.firebaseDB ? 'success' : 'error'}">
+        ${window.firebaseDB ? '✅' : '❌'} Firestore: ${window.firebaseDB ? 'Ready' : 'Not Found'}
+      </div>`;
+      
+      html += `<div class="status info">
+        📦 AuthService: ${typeof window.authService !== 'undefined' ? 'Loaded' : 'Not Loaded'}
+      </div>`;
+      
+      html += `<div class="status info">
+        💾 DatabaseService: ${typeof window.dbService !== 'undefined' ? 'Loaded' : 'Not Loaded'}
+      </div>`;
+      
+      resultDiv.innerHTML = html;
+    }
+
+    // Test 2: Test Registration
+    async function testRegister() {
+      const resultDiv = document.getElementById('register-result');
+      resultDiv.innerHTML = '<div class="status info">⏳ Testing registration...</div>';
+      
+      try {
+        const email = document.getElementById('test-email').value;
+        const password = document.getElementById('test-password').value;
+        const userData = {
+          fullname: document.getElementById('test-fullname').value,
+          username: document.getElementById('test-username').value,
+          phone: document.getElementById('test-phone').value
+        };
+
+        console.log('Attempting registration with:', { email, userData });
+
+        const result = await authService.register(email, password, userData);
+        
+        if (result.success) {
+          resultDiv.innerHTML = `
+            <div class="status success">
+              ✅ Registration Successful!<br>
+              User UID: ${result.user.uid}<br>
+              Email: ${result.user.email}
+            </div>`;
+        } else {
+          resultDiv.innerHTML = `<div class="status error">❌ Registration Failed: ${result.error}</div>`;
+        }
+      } catch (error) {
+        console.error('Registration test error:', error);
+        resultDiv.innerHTML = `<div class="status error">❌ Error: ${error.message}</div>`;
+      }
+    }
+
+    // Test 3: Test Login
+    async function testLogin() {
+      const resultDiv = document.getElementById('login-result');
+      resultDiv.innerHTML = '<div class="status info">⏳ Testing login...</div>';
+      
+      try {
+        const email = document.getElementById('login-email').value;
+        const password = document.getElementById('login-password').value;
+
+        console.log('Attempting login with:', email);
+
+        // Prevent redirect for testing
+        const originalHref = window.location.href;
+        
+        const result = await authService.login(email, password);
+        
+        // Cancel redirect
+        setTimeout(() => {
+          if (window.location.href !== originalHref) {
+            window.history.back();
+          }
+        }, 100);
+        
+        if (result.success) {
+          resultDiv.innerHTML = `
+            <div class="status success">
+              ✅ Login Successful!<br>
+              User UID: ${result.user.uid}<br>
+              Email: ${result.user.email}<br>
+              Role: ${result.userData?.role || 'user'}
+            </div>`;
+        } else {
+          resultDiv.innerHTML = `<div class="status error">❌ Login Failed: ${result.error}</div>`;
+        }
+      } catch (error) {
+        console.error('Login test error:', error);
+        resultDiv.innerHTML = `<div class="status error">❌ Error: ${error.message}</div>`;
+      }
+    }
+
+    // Test 4: Check Auth State
+    function checkAuthState() {
+      const resultDiv = document.getElementById('auth-state');
+      const user = authService.getCurrentUser();
+      
+      if (user) {
+        resultDiv.innerHTML = `
+          <div class="status success">
+            ✅ User Logged In<br>
+            UID: <code>${user.uid}</code><br>
+            Email: <code>${user.email}</code><br>
+            Display Name: <code>${user.displayName || 'N/A'}</code>
+          </div>`;
+      } else {
+        resultDiv.innerHTML = '<div class="status info">ℹ️ No user logged in</div>';
+      }
+    }
+
+    // Test Logout
+    async function testLogout() {
+      const resultDiv = document.getElementById('auth-state');
+      resultDiv.innerHTML = '<div class="status info">⏳ Logging out...</div>';
+      
+      try {
+        await authService.auth.signOut();
+        resultDiv.innerHTML = '<div class="status success">✅ Logged out successfully</div>';
+        checkAuthState();
+      } catch (error) {
+        resultDiv.innerHTML = `<div class="status error">❌ Logout failed: ${error.message}</div>`;
+      }
+    }
+
+    // Test 5: Firestore Test
+    async function testFirestore() {
+      const resultDiv = document.getElementById('firestore-result');
+      resultDiv.innerHTML = '<div class="status info">⏳ Testing Firestore...</div>';
+      
+      try {
+        // Try to read from a collection
+        const testRef = await window.firebaseDB.collection('test').limit(1).get();
+        
+        resultDiv.innerHTML = `
+          <div class="status success">
+            ✅ Firestore Connected!<br>
+            Can read collections: Yes<br>
+            Test query executed successfully
+          </div>`;
+      } catch (error) {
+        console.error('Firestore test error:', error);
+        resultDiv.innerHTML = `
+          <div class="status error">
+            ❌ Firestore Error: ${error.message}<br>
+            Code: ${error.code}<br>
+            <small>Check Firebase Console > Firestore > Rules</small>
+          </div>`;
+      }
+    }
+
+    // Auto-check on load
+    setTimeout(() => {
+      checkFirebaseServices();
+      checkAuthState();
+    }, 500);
+  </script>
+</body>
+</html>

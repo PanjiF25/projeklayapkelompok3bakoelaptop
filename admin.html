@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Admin Dashboard BAKOELAPTOP - Kelola produk, pesanan, pembayaran, dan pengguna.">
+  <meta name="robots" content="noindex, nofollow">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  
+  <title>Admin Dashboard - BAKOELAPTOP | Kelola Website</title>
+  <link rel="stylesheet" href="style/global.css">
+  <link rel="stylesheet" href="style/admin.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+  <!-- Admin Navbar -->
+  <header class="admin-navbar">
+    <div class="logo">BAKOELAPTOP <span class="admin-badge">ADMIN</span></div>
+    <div class="admin-user">
+      <span id="admin-name">Admin</span>
+      <button id="admin-logout" class="btn-logout">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </button>
+    </div>
+  </header>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <nav class="sidebar-nav">
+      <a href="#dashboard" class="nav-item active" data-section="dashboard">
+        <i class="fas fa-chart-line"></i> Dashboard
+      </a>
+      <a href="#pending-approvals" class="nav-item" data-section="pending-approvals">
+        <i class="fas fa-clock"></i> Pending Approval <span id="pending-count" class="badge">0</span>
+      </a>
+      <a href="#products" class="nav-item" data-section="products">
+        <i class="fas fa-laptop"></i> Produk
+      </a>
+      <a href="#orders" class="nav-item" data-section="orders">
+        <i class="fas fa-shopping-cart"></i> Pesanan
+      </a>
+      <a href="#payments" class="nav-item" data-section="payments">
+        <i class="fas fa-money-check-alt"></i> Pembayaran
+      </a>
+      <a href="#users" class="nav-item" data-section="users">
+        <i class="fas fa-users"></i> Pengguna
+      </a>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="admin-content">
+    
+    <!-- Dashboard Section -->
+    <section id="dashboard-section" class="content-section active">
+      <h1><i class="fas fa-chart-line"></i> Dashboard</h1>
+      
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+            <i class="fas fa-box"></i>
+          </div>
+          <div class="stat-info">
+            <h3 id="total-products">0</h3>
+            <p>Total Produk</p>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+            <i class="fas fa-shopping-bag"></i>
+          </div>
+          <div class="stat-info">
+            <h3 id="total-orders">0</h3>
+            <p>Total Pesanan</p>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+            <i class="fas fa-clock"></i>
+          </div>
+          <div class="stat-info">
+            <h3 id="pending-orders">0</h3>
+            <p>Produk Pending</p>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon" style="background: linear-gradient(135deg, #00d4aa 0%, #00a896 100%);">
+            <i class="fas fa-check-circle"></i>
+          </div>
+          <div class="stat-info">
+            <h3 id="completed-orders">0</h3>
+            <p>Produk Disetujui</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="dashboard-charts">
+        <div class="chart-card">
+          <h3>Pesanan Terbaru</h3>
+          <div id="recent-orders"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pending Approvals Section -->
+    <section id="pending-approvals-section" class="content-section">
+      <div class="section-header">
+        <h1><i class="fas fa-clock"></i> Produk Menunggu Persetujuan</h1>
+        <button class="btn-secondary" id="refresh-pending-btn">
+          <i class="fas fa-sync-alt"></i> Refresh
+        </button>
+      </div>
+
+      <div id="pending-products-container" class="pending-products-grid">
+        <!-- Pending products will be loaded here -->
+      </div>
+    </section>
+
+    <!-- Products Section -->
+    <section id="products-section" class="content-section">
+      <div class="section-header">
+        <h1><i class="fas fa-laptop"></i> Manajemen Produk</h1>
+        <button class="btn-primary" id="add-product-btn">
+          <i class="fas fa-plus"></i> Tambah Produk
+        </button>
+      </div>
+
+      <div class="products-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Gambar</th>
+              <th>Nama Produk</th>
+              <th>Kategori</th>
+              <th>Harga</th>
+              <th>Spesifikasi</th>
+              <th>Status</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="products-tbody">
+            <!-- Products will be loaded here -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Orders Section -->
+    <section id="orders-section" class="content-section">
+      <div class="section-header">
+        <h1><i class="fas fa-shopping-cart"></i> Manajemen Pesanan</h1>
+        <div class="filter-group">
+          <select id="order-filter" class="filter-select">
+            <option value="all">Semua Status</option>
+            <option value="pending">Menunggu Pembayaran</option>
+            <option value="paid">Sudah Bayar</option>
+            <option value="confirmed">Dikonfirmasi</option>
+            <option value="completed">Selesai</option>
+            <option value="cancelled">Dibatalkan</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="orders-list" id="orders-list">
+        <!-- Orders will be loaded here -->
+      </div>
+    </section>
+
+    <!-- Payments Section -->
+    <section id="payments-section" class="content-section">
+      <div class="section-header">
+        <h1><i class="fas fa-money-check-alt"></i> Verifikasi Pembayaran</h1>
+      </div>
+
+      <div class="payments-grid" id="payments-grid">
+        <!-- Payment proofs will be loaded here -->
+      </div>
+    </section>
+
+    <!-- Users Section -->
+    <section id="users-section" class="content-section">
+      <div class="section-header">
+        <h1><i class="fas fa-users"></i> Manajemen Pengguna</h1>
+      </div>
+
+      <div class="users-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Email</th>
+              <th>No. HP</th>
+              <th>Alamat</th>
+              <th>Tanggal Daftar</th>
+              <th>Role</th>
+            </tr>
+          </thead>
+          <tbody id="users-tbody">
+            <!-- Users will be loaded here -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Modal Add/Edit Product -->
+  <div id="product-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modal-title">Tambah Produk</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <form id="product-form">
+        <input type="hidden" id="product-id">
+        
+        <label>Nama Produk:</label>
+        <input type="text" id="product-name" required>
+
+        <label>Kategori:</label>
+        <select id="product-category" required>
+          <option value="laptop">Laptop</option>
+          <option value="handphone">Handphone</option>
+        </select>
+
+        <label>Harga (Rp):</label>
+        <input type="number" id="product-price" required>
+
+        <label>Spesifikasi:</label>
+        <textarea id="product-specs" rows="4" required></textarea>
+
+        <label>Gambar Produk:</label>
+        <div class="image-input-options">
+          <div class="radio-group">
+            <label class="radio-option">
+              <input type="radio" name="image-type" value="url" checked>
+              <span>URL Gambar</span>
+            </label>
+            <label class="radio-option">
+              <input type="radio" name="image-type" value="upload">
+              <span>Upload File</span>
+            </label>
+          </div>
+
+          <!-- URL Input -->
+          <div id="url-input-container" class="input-container active">
+            <input type="url" id="product-image-url" placeholder="https://example.com/image.jpg">
+            <small>Masukkan URL gambar dari internet</small>
+          </div>
+
+          <!-- File Upload Input -->
+          <div id="file-input-container" class="input-container">
+            <input type="file" id="product-image-file" accept="image/*" style="display: none;">
+            <label for="product-image-file" class="file-upload-label">
+              <i class="fas fa-cloud-upload-alt"></i>
+              <span id="file-name">Klik untuk pilih gambar</span>
+            </label>
+            <div id="image-preview-container" style="display: none; margin-top: 10px;">
+              <img id="image-preview" style="max-width: 100%; max-height: 200px; border-radius: 10px;">
+              <button type="button" class="btn-remove-image" onclick="removeImagePreview()">
+                <i class="fas fa-times"></i> Hapus
+              </button>
+            </div>
+            <small>Ukuran maksimal: 5MB. Format: JPG, PNG, GIF</small>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary modal-cancel">Batal</button>
+          <button type="submit" class="btn-primary">Simpan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Order Detail -->
+  <div id="order-modal" class="modal">
+    <div class="modal-content large">
+      <div class="modal-header">
+        <h2>Detail Pesanan</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div id="order-detail-content">
+        <!-- Order details will be loaded here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Confirm Modal -->
+  <div id="custom-confirm-modal" class="custom-modal">
+    <div class="custom-modal-overlay"></div>
+    <div class="custom-modal-content">
+      <div class="custom-modal-icon">
+        <i class="fas fa-question-circle"></i>
+      </div>
+      <h3 id="confirm-title">Konfirmasi</h3>
+      <p id="confirm-message">Apakah Anda yakin?</p>
+      <div class="custom-modal-buttons">
+        <button class="btn-cancel-custom" id="confirm-cancel">Batal</button>
+        <button class="btn-confirm-custom" id="confirm-ok">Ya, Lanjutkan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Alert Modal -->
+  <div id="custom-alert-modal" class="custom-modal">
+    <div class="custom-modal-overlay"></div>
+    <div class="custom-modal-content">
+      <div class="custom-modal-icon success">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <h3 id="alert-title">Berhasil!</h3>
+      <p id="alert-message">Operasi berhasil dilakukan</p>
+      <div class="custom-modal-buttons">
+        <button class="btn-confirm-custom" id="alert-ok">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+  <!-- Firebase Config & Services -->
+  <script src="firebase-config.js"></script>
+  <script src="script/utils.js"></script>
+  <script src="firebase-auth.js"></script>
+  <script src="firebase-db.js"></script>
+  
+  <script src="script/admin.js"></script>
+</body>
+</html>

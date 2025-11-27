@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Tukar laptop lama Anda dengan yang baru di BAKOELAPTOP. Sistem trade-in laptop yang mudah dan menguntungkan.">
+  <meta name="keywords" content="tukar laptop, trade-in laptop, tukar tambah laptop">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  
+  <title>Trade Laptop - BAKOELAPTOP | Tukar Tambah Laptop</title>
+  <link rel="stylesheet" href="style/global.css">
+  <link rel="stylesheet" href="style/trade.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="logo">BAKOELAPTOP</div>
+
+    <nav class="main-nav">
+      <a href="index.html">Home</a>
+      <a href="buy.html">Buy</a>
+      <a href="sell.html">Sell</a>
+      <a href="trade.html" class="active">Trade</a>
+      
+      <!-- Auth Buttons (shown when not logged in) -->
+      <div id="auth-buttons" style="display: flex; gap: 10px;">
+        <a href="login.html" class="btn-signin">Sign In</a>
+        <a href="register.html" class="btn-signup">Sign Up</a>
+      </div>
+      
+      <!-- User Menu (shown when logged in) -->
+      <div id="user-menu" style="display: none; gap: 15px; align-items: center;">
+        <a href="cart.html"><img src="https://cdn-icons-png.flaticon.com/512/34/34568.png" alt="Cart" style="width:24px; vertical-align: middle;"></a>
+        <div class="profile-menu">
+          <img src="https://cdn-icons-png.flaticon.com/512/1077/1077114.png" alt="Profile" style="width:24px; vertical-align: middle; cursor:pointer;">
+          <ul class="dropdown">
+            <li><a href="profile.html">My Account</a></li>
+            <li><a href="#" id="logout-btn">Logout</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Trade Section -->
+  <main class="trade-container">
+    <!-- Header -->
+    <div class="trade-header">
+      <h1><i class="fa-solid fa-repeat"></i> Trade-In Your Laptop</h1>
+      <p class="desc">Exchange your old laptop for a newer model. Simple, fast, and hassle-free.</p>
+    </div>
+
+    <!-- Progress Steps -->
+    <div class="progress-steps">
+      <div class="step active" data-step="1">
+        <div class="step-circle">1</div>
+        <span>Old Laptop</span>
+      </div>
+      <div class="step-line"></div>
+      <div class="step" data-step="2">
+        <div class="step-circle">2</div>
+        <span>New Laptop</span>
+      </div>
+      <div class="step-line"></div>
+      <div class="step" data-step="3">
+        <div class="step-circle">3</div>
+        <span>Confirm</span>
+      </div>
+    </div>
+
+    <form id="tradeForm">
+      <!-- Step 1: Old Laptop -->
+      <div class="trade-step" id="step-1">
+        <div class="step-card">
+          <div class="card-header">
+            <i class="fas fa-laptop"></i>
+            <h2>Tell Us About Your Old Laptop</h2>
+            <p>Provide details about the laptop you want to trade in</p>
+          </div>
+          
+          <div class="card-body">
+            <div class="form-group">
+              <label><i class="fas fa-tag"></i> Laptop Brand & Model</label>
+              <input type="text" id="oldName" placeholder="e.g., ASUS VivoBook 14, MacBook Pro 2020" required>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label><i class="fas fa-microchip"></i> Processor</label>
+                <input type="text" id="oldProcessor" placeholder="e.g., Intel Core i5, AMD Ryzen 5">
+              </div>
+              <div class="form-group">
+                <label><i class="fas fa-memory"></i> RAM</label>
+                <input type="text" id="oldRam" placeholder="e.g., 8GB, 12GB, 16GB">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label><i class="fas fa-star-half-alt"></i> Laptop Condition</label>
+              <div class="condition-buttons">
+                <button type="button" class="condition-btn" data-value="Excellent">
+                  <i class="fas fa-star"></i>
+                  <span>Excellent</span>
+                  <small>Seperti baru, tidak ada goresan atau bekas pemakaian sama sekali. Layar mulus, body sempurna, fungsi 100%</small>
+                </button>
+                <button type="button" class="condition-btn" data-value="Good">
+                  <i class="fas fa-check-circle"></i>
+                  <span>Good</span>
+                  <small>Sedikit bekas pemakaian normal (goresan ringan di body), namun layar masih bersih dan semua fungsi bekerja sempurna</small>
+                </button>
+                <button type="button" class="condition-btn" data-value="Fair">
+                  <i class="fas fa-tools"></i>
+                  <span>Fair</span>
+                  <small>Bekas pemakaian terlihat jelas (goresan, penyok kecil), tapi semua fungsi masih berjalan normal tanpa masalah teknis</small>
+                </button>
+              </div>
+              <input type="hidden" id="oldCondition" required>
+            </div>
+
+            <div class="form-group">
+              <label><i class="fas fa-info-circle"></i> Additional Notes (Optional)</label>
+              <textarea id="oldDesc" rows="4" placeholder="Any scratches, dents, or special features you want to mention..."></textarea>
+            </div>
+          </div>
+
+          <div class="card-footer">
+            <button type="button" class="btn-next" onclick="nextStep(2)">
+              Next Step <i class="fas fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: New Laptop -->
+      <div class="trade-step" id="step-2" style="display: none;">
+        <div class="step-card">
+          <div class="card-header">
+            <i class="fas fa-laptop-code"></i>
+            <h2>Choose Your New Laptop</h2>
+            <p>Select the laptop you'd like to receive in exchange</p>
+          </div>
+          
+          <div class="card-body">
+            <div class="form-group">
+              <label><i class="fas fa-shopping-cart"></i> Browse Available Laptops</label>
+              <div class="laptop-selection">
+                <div class="laptop-card" data-laptop="MacBook Air M2">
+                  <img src="https://via.placeholder.com/200x150/00d4aa/ffffff?text=MacBook+Air+M2" alt="MacBook">
+                  <h3>MacBook Air M2</h3>
+                  <p class="specs">M2 Chip • 8GB RAM • 256GB SSD</p>
+                  <p class="price">Rp 18.000.000</p>
+                  <button type="button" class="btn-select">Select</button>
+                </div>
+                <div class="laptop-card" data-laptop="ASUS TUF Gaming F15">
+                  <img src="https://via.placeholder.com/200x150/00d4aa/ffffff?text=ASUS+TUF" alt="ASUS">
+                  <h3>ASUS TUF Gaming F15</h3>
+                  <p class="specs">i7-12700H • 16GB • RTX 3060</p>
+                  <p class="price">Rp 15.000.000</p>
+                  <button type="button" class="btn-select">Select</button>
+                </div>
+                <div class="laptop-card" data-laptop="Lenovo ThinkPad X1">
+                  <img src="https://via.placeholder.com/200x150/00d4aa/ffffff?text=ThinkPad+X1" alt="Lenovo">
+                  <h3>Lenovo ThinkPad X1</h3>
+                  <p class="specs">i7-11th Gen • 16GB • 512GB</p>
+                  <p class="price">Rp 20.000.000</p>
+                  <button type="button" class="btn-select">Select</button>
+                </div>
+              </div>
+              <input type="hidden" id="newLaptop" required>
+            </div>
+
+            <div class="form-group">
+              <label><i class="fas fa-comment-alt"></i> Special Requests (Optional)</label>
+              <textarea id="note" rows="3" placeholder="Any specific requirements or questions about the trade-in..."></textarea>
+            </div>
+          </div>
+
+          <div class="card-footer">
+            <button type="button" class="btn-back" onclick="prevStep(1)">
+              <i class="fas fa-arrow-left"></i> Back
+            </button>
+            <button type="button" class="btn-next" onclick="nextStep(3)">
+              Next Step <i class="fas fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3: Confirmation -->
+      <div class="trade-step" id="step-3" style="display: none;">
+        <div class="step-card">
+          <div class="card-header">
+            <i class="fas fa-clipboard-check"></i>
+            <h2>Review Your Trade-In</h2>
+            <p>Please review your information before submitting</p>
+          </div>
+          
+          <div class="card-body">
+            <div class="summary-section">
+              <h3><i class="fas fa-laptop"></i> Your Old Laptop</h3>
+              <div class="summary-item">
+                <span>Model:</span>
+                <strong id="summary-old-name">-</strong>
+              </div>
+              <div class="summary-item">
+                <span>Processor:</span>
+                <strong id="summary-old-processor">-</strong>
+              </div>
+              <div class="summary-item">
+                <span>RAM:</span>
+                <strong id="summary-old-ram">-</strong>
+              </div>
+              <div class="summary-item">
+                <span>Condition:</span>
+                <strong id="summary-old-condition">-</strong>
+              </div>
+            </div>
+
+            <div class="trade-arrow">
+              <i class="fas fa-exchange-alt"></i>
+            </div>
+
+            <div class="summary-section">
+              <h3><i class="fas fa-laptop-code"></i> New Laptop</h3>
+              <div class="summary-item">
+                <span>Model:</span>
+                <strong id="summary-new-laptop">-</strong>
+              </div>
+            </div>
+
+            <div class="info-box">
+              <i class="fas fa-info-circle"></i>
+              <p>Our team will contact you within 1-2 business days to arrange inspection and complete the trade-in process.</p>
+            </div>
+          </div>
+
+          <div class="card-footer">
+            <button type="button" class="btn-back" onclick="prevStep(2)">
+              <i class="fas fa-arrow-left"></i> Back
+            </button>
+            <button type="submit" class="btn-submit">
+              <i class="fas fa-check"></i> Submit Trade-In Request
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <!-- Success Modal -->
+    <div id="tradeResult" class="trade-result" style="display:none;">
+      <div class="success-icon">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <h2>Trade-In Request Submitted!</h2>
+      <p>Thank you for your trade-in request. Our team will review your information and contact you shortly.</p>
+      <button class="btn-done" onclick="window.location.href='index.html'">Back to Home</button>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-contact">
+        <div class="footer-contact-item">
+          <i class="fab fa-whatsapp"></i>
+          <a href="https://wa.me/6285749406558" target="_blank">+62 857-4940-6558</a>
+        </div>
+        <div class="footer-contact-item">
+          <i class="fab fa-instagram"></i>
+          <a href="https://www.instagram.com/bakoelaptop/" target="_blank">@bakoelaptop</a>
+        </div>
+      </div>
+      <div class="footer-divider"></div>
+      <p class="footer-copyright">&copy; 2025 BAKOELAPTOP. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+  <!-- Firebase Config & Services -->
+  <script src="firebase-config.js"></script>
+  <script src="script/utils.js"></script>
+  <script src="firebase-auth.js"></script>
+  <script src="firebase-db.js"></script>
+  <script src="script/navbar.js"></script>
+  <script src="script/trade.js"></script>
+</body>
+</html>

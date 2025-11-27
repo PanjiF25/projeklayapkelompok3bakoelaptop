@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Daftar akun BAKOELAPTOP gratis sekarang. Mulai jual beli laptop bekas dengan mudah dan aman.">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  
+  <title>Register - BAKOELAPTOP | Daftar Akun Baru</title>
+  <link rel="stylesheet" href="style/login.css"/>
+  <link rel="stylesheet" href="style/loading.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+  <div class="page-wrapper">
+
+    <!-- Back to Home Button -->
+    <a href="index.html" class="back-to-home">
+      <i class="fas fa-arrow-left"></i> Back to Home
+    </a>
+
+    <!-- SECTION ATAS (TOSKA) -->
+    <section class="section-toska">
+      <!-- Background Patterns -->
+      <div class="dots-pattern"></div>
+      <div class="wave-pattern"></div>
+
+      <!-- Decorative Elements -->
+      <div class="decorative-circle circle-1"></div>
+      <div class="decorative-circle circle-2"></div>
+      <div class="decorative-circle circle-3"></div>
+      <div class="decorative-shape shape-1"></div>
+      <div class="decorative-shape shape-2"></div>
+      <div class="decorative-shape shape-3"></div>
+
+      <div class="content-left">
+        <div class="text">
+          <h2>JOIN US TODAY</h2>
+          <h3>Bakoelaptop</h3>
+          <p>Create your account to start buying, selling, or trading laptops with trusted users. Your marketplace journey begins here!</p>
+        </div>
+        <div class="image">
+          <img src="assets/images/Desktop - 1.png" alt="Laptop 1" class="laptop-old" />
+          <img src="assets/images/Mockup_03 3.png" alt="Laptop Mockup 2" class="laptop-new" />
+        </div>
+      </div>
+    </section>
+
+    <!-- REGISTER FORM MENGAMBANG -->
+    <div class="login-float">
+      <div class="login-box" style="max-height: 90vh; overflow-y: auto;">
+        <h2>Welcome to <span class="highlight">BAKOELAPTOP</span></h2>
+        <h1>Sign Up</h1>
+
+        <div class="social-login">
+          <button class="google-btn" type="button">
+            <img src="https://cdn-icons-png.flaticon.com/512/281/281764.png" alt="Google Logo" /> Continue with Google </button>
+          <div class="social-icons">
+            <button type="button"><img src="https://cdn-icons-png.flaticon.com/512/733/733547.png" alt="Facebook" /></button>
+            <button type="button"><img src="https://cdn-icons-png.flaticon.com/512/733/733579.png" alt="Twitter" /></button>
+          </div>
+        </div>
+
+        <div style="text-align: center; margin: 10px 0; color: #888;">- OR -</div>
+
+        <form id="register-form">
+          <label for="fullname">Full Name</label>
+          <input type="text" id="fullname" placeholder="Enter your full name" required/>
+
+          <label for="username">Username</label>
+          <input type="text" id="username" placeholder="Choose a username" required/>
+
+          <label for="email">Email Address</label>
+          <input type="email" id="email" placeholder="Enter your email" required/>
+
+          <label for="phone">Phone Number</label>
+          <input type="tel" id="phone" placeholder="Enter your phone number" required/>
+
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="Create a password (min. 6 characters)" required minlength="6"/>
+
+          <label for="confirm-password">Confirm Password</label>
+          <input type="password" id="confirm-password" placeholder="Confirm your password" required minlength="6"/>
+
+          <label style="display: flex; align-items: center; margin-top: 15px; font-size: 14px; cursor: pointer;">
+            <input type="checkbox" id="terms" required style="margin-right: 8px; cursor: pointer;"/>
+            I agree to the <a href="#" style="color: #00796b; text-decoration: underline; margin-left: 4px;">Terms & Conditions</a>
+          </label>
+
+          <button type="submit" class="submit" style="margin-top: 20px;">Sign Up</button>
+          
+          <!-- Error and Success Messages -->
+          <div id="error-msg" style="
+            color: #d32f2f; 
+            background: #ffebee; 
+            border: 1px solid #ef5350; 
+            border-radius: 8px; 
+            padding: 12px; 
+            margin-top: 15px; 
+            display: none;
+            font-size: 14px;
+            line-height: 1.5;
+          "></div>
+          
+          <div id="success-msg" style="
+            color: #388e3c; 
+            background: #e8f5e9; 
+            border: 1px solid #66bb6a; 
+            border-radius: 8px; 
+            padding: 12px; 
+            margin-top: 15px; 
+            display: none;
+            font-size: 14px;
+            line-height: 1.5;
+          "></div>
+        </form>
+
+         <!-- Tambahan Sign In -->
+        <p class="signup-text">
+          Already have an account? <a href="login.html" class="signup-link">Sign In</a>
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+  <!-- Firebase Config & Services -->
+  <script src="firebase-config.js"></script>
+  <script src="script/utils.js"></script>
+  <script src="firebase-auth.js"></script>
+  <script src="firebase-db.js"></script>
+  
+  <!-- Register Script -->
+  <script>
+    // Wait for DOM to be fully loaded
+    document.addEventListener('DOMContentLoaded', () => {
+      // Handle registration form submission
+      const form = document.getElementById('register-form');
+      if (!form) {
+        console.error('❌ Form not found!');
+        return;
+      }
+      
+      console.log('✅ Form found, attaching listener');
+      
+      form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const fullname = document.getElementById('fullname').value.trim();
+      const username = document.getElementById('username').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirm-password').value;
+      const terms = document.getElementById('terms').checked;
+      
+      const errorMsg = document.getElementById('error-msg');
+      const successMsg = document.getElementById('success-msg');
+      
+      // Clear previous messages
+      errorMsg.textContent = '';
+      errorMsg.style.display = 'none';
+      successMsg.textContent = '';
+      successMsg.style.display = 'none';
+      
+      // Validation
+      if (!fullname || fullname.length < 3) {
+        errorMsg.textContent = '❌ Nama lengkap harus minimal 3 karakter';
+        errorMsg.style.display = 'block';
+        return;
+      }
+      
+      if (!username || username.length < 3) {
+        errorMsg.textContent = '❌ Username harus minimal 3 karakter';
+        errorMsg.style.display = 'block';
+        return;
+      }
+      
+      if (!validateEmail(email)) {
+        errorMsg.textContent = '❌ Format email tidak valid. Contoh: nama@email.com';
+        errorMsg.style.display = 'block';
+        return;
+      }
+      
+      if (phone && !validatePhone(phone)) {
+        errorMsg.textContent = '❌ Nomor telepon tidak valid (10-13 digit)';
+        errorMsg.style.display = 'block';
+        return;
+      }
+      
+      if (!validatePassword(password)) {
+        errorMsg.textContent = '❌ Password harus minimal 6 karakter';
+        errorMsg.style.display = 'block';
+        return;
+      }
+      
+      if (password !== confirmPassword) {
+        errorMsg.textContent = '❌ Password dan konfirmasi password tidak sama';
+        errorMsg.style.display = 'block';
+        return;
+      }
+      
+      if (!terms) {
+        errorMsg.textContent = '❌ Anda harus menyetujui Terms & Conditions';
+        errorMsg.style.display = 'block';
+        return;
+      }
+      
+      // Attempt registration with Firebase
+      console.log('🚀 Attempting registration with:', { email, fullname, username, phone });
+      
+      const result = await authService.register(email, password, {
+        fullname: sanitizeInput(fullname),
+        username: sanitizeInput(username),
+        phone: sanitizeInput(phone)
+      });
+      
+      console.log('📊 Registration result:', result);
+      
+      if (result.success) {
+        successMsg.textContent = '✅ Registrasi berhasil! Mengalihkan ke halaman utama...';
+        successMsg.style.display = 'block';
+        // Redirect is now handled by firebase-auth.js
+      } else {
+        errorMsg.textContent = result.error;
+        errorMsg.style.display = 'block';
+      }
+      });
+    });
+  </script>
+</body>
+</html>

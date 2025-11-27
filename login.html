@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Login ke akun BAKOELAPTOP Anda untuk mulai jual beli laptop bekas.">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  
+  <title>Login - BAKOELAPTOP | Masuk ke Akun Anda</title>
+  <link rel="stylesheet" href="style/login.css"/>
+  <link rel="stylesheet" href="style/loading.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+  <div class="page-wrapper">
+
+    <!-- Back to Home Button -->
+    <a href="index.html" class="back-to-home">
+      <i class="fas fa-arrow-left"></i> Back to Home
+    </a>
+
+    <!-- SECTION ATAS (TOSKA) -->
+    <section class="section-toska">
+      <!-- Background Patterns -->
+      <div class="dots-pattern"></div>
+      <div class="wave-pattern"></div>
+
+      <!-- Decorative Elements -->
+      <div class="decorative-circle circle-1"></div>
+      <div class="decorative-circle circle-2"></div>
+      <div class="decorative-circle circle-3"></div>
+      <div class="decorative-shape shape-1"></div>
+      <div class="decorative-shape shape-2"></div>
+      <div class="decorative-shape shape-3"></div>
+
+      <div class="content-left">
+        <div class="text">
+          <h2>WELCOME BACK</h2>
+          <h3>Bakoelaptop</h3>
+          <p>Sign in to safely buy, sell, or trade laptops with people you can trust. Your next great deal is just a click away.</p>
+        </div>
+        <div class="image">
+          <img src="assets/images/Desktop - 1.png" alt="Laptop 1" class="laptop-old" />
+          <img src="assets/images/Mockup_03 3.png" alt="Laptop Mockup 2" class="laptop-new" />
+        </div>
+      </div>
+    </section>
+
+    <!-- LOGIN FORM MENGAMBANG -->
+    <div class="login-float">
+      <div class="login-box">
+        <h2>Welcome to <span class="highlight">BAKOELAPTOP</span></h2>
+        <h1>Sign In</h1>
+
+        <div class="social-login">
+          <button class="google-btn">
+            <img src="https://cdn-icons-png.flaticon.com/512/281/281764.png" alt="Google Logo" /> Continue with Google </button>
+          <div class="social-icons">
+            <button><img src="https://cdn-icons-png.flaticon.com/512/733/733547.png" alt="Facebook" /></button>
+            <button><img src="https://cdn-icons-png.flaticon.com/512/733/733579.png" alt="Twitter" /></button>
+          </div>
+        </div>
+
+        <form id="login-form">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" placeholder="Enter your email" required/>
+
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="Enter your password" required/>
+
+          <a href="#" class="forgot">Forgot Password?</a>
+
+          <button type="submit" class="submit">Sign In</button>
+          
+          <!-- Error Message -->
+          <div id="error-msg" style="
+            color: #d32f2f; 
+            background: #ffebee; 
+            border: 1px solid #ef5350; 
+            border-radius: 8px; 
+            padding: 12px; 
+            margin-top: 15px; 
+            display: none;
+            font-size: 14px;
+            line-height: 1.5;
+          "></div>
+        </form>
+
+         <!-- Tambahan Sign Up -->
+        <p class="signup-text">
+          Don't have an account? <a href="register.html" class="signup-link">Sign Up</a>
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+  <!-- Firebase Config & Services -->
+  <script src="firebase-config.js"></script>
+  <script src="script/utils.js"></script>
+  <script src="firebase-auth.js"></script>
+  <script src="firebase-db.js"></script>
+  
+  <!-- Login Script -->
+  <script>
+    // Wait for DOM to be fully loaded
+    document.addEventListener('DOMContentLoaded', () => {
+      // Handle login form submission
+      const form = document.getElementById('login-form');
+      if (!form) {
+        console.error('❌ Form not found!');
+        return;
+      }
+      
+      console.log('✅ Form found, attaching listener');
+      
+      form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const errorMsg = document.getElementById('error-msg');
+      
+      // Clear previous errors
+      errorMsg.textContent = '';
+      errorMsg.style.display = 'none';
+      
+      // Validation
+      if (!validateEmail(email)) {
+        errorMsg.textContent = '❌ Format email tidak valid. Contoh: nama@email.com';
+        errorMsg.style.display = 'block';
+        return;
+      }
+      
+      if (!password) {
+        errorMsg.textContent = '❌ Silakan masukkan password Anda';
+        errorMsg.style.display = 'block';
+        return;
+      }
+      
+      // Attempt login with Firebase
+      const result = await authService.login(email, password);
+      
+      if (!result.success) {
+        errorMsg.textContent = result.error;
+        errorMsg.style.display = 'block';
+      }
+    });
+
+    // Handle forgot password
+    document.querySelector('.forgot').addEventListener('click', async (e) => {
+      e.preventDefault();
+      
+      const email = document.getElementById('email').value.trim();
+      
+      if (!email) {
+        showWarning('Please enter your email address first');
+        return;
+      }
+      
+      if (!validateEmail(email)) {
+        showError('Please enter a valid email address');
+        return;
+      }
+      
+      await authService.resetPassword(email);
+      });
+    });
+  </script>
+</body>
+</html>
+</html>

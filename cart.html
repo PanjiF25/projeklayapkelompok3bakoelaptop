@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Keranjang belanja Anda di BAKOELAPTOP. Lihat dan kelola item yang akan Anda beli.">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  
+  <title>My Cart - BAKOELAPTOP | Keranjang Belanja</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="style/global.css">
+  <link rel="stylesheet" href="style/cart.css">
+</head>
+<body>
+
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="logo">BAKOELAPTOP</div>
+
+    <nav class="main-nav">
+      <a href="index.html">Home</a>
+      <a href="buy.html">Buy</a>
+      <a href="sell.html">Sell</a>
+      <a href="trade.html">Trade</a>
+      
+      <!-- Auth Buttons (shown when not logged in) -->
+      <div id="auth-buttons" style="display: none; gap: 10px;">
+        <a href="login.html" class="btn-signin">Sign In</a>
+        <a href="register.html" class="btn-signup">Sign Up</a>
+      </div>
+      
+      <!-- User Menu (shown when logged in) -->
+      <div id="user-menu" style="display: none; gap: 15px; align-items: center;">
+        <a href="cart.html"><img src="https://cdn-icons-png.flaticon.com/512/34/34568.png" alt="Cart" style="width:24px; vertical-align: middle;"></a>
+        <div class="profile-menu">
+          <img src="https://cdn-icons-png.flaticon.com/512/1077/1077114.png" alt="Profile" style="width:24px; vertical-align: middle; cursor:pointer;">
+          <ul class="dropdown">
+            <li><a href="profile.html">My Account</a></li>
+            <li><a href="#" id="logout-btn">Logout</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Cart Container -->
+  <div class="cart-container">
+    <h1><img src="https://cdn-icons-png.flaticon.com/512/34/34568.png" alt="Cart" style="width:30px; vertical-align: middle;"></a></li> My Shopping Cart</h1>
+    <div id="cart-items"></div>
+
+    <div class="cart-summary">
+      <h3>Total: <span id="cart-total">Rp 0</span></h3>
+      <button id="checkout-btn">Checkout</button>
+    </div>
+  </div>
+
+  <!-- Custom Confirm Modal -->
+  <div id="custom-confirm" class="custom-modal">
+    <div class="custom-modal-content">
+      <div class="custom-modal-icon">
+        <i class="fas fa-question-circle"></i>
+      </div>
+      <h3 id="confirm-title">Konfirmasi</h3>
+      <p id="confirm-message">Apakah Anda yakin?</p>
+      <div class="custom-modal-buttons">
+        <button id="confirm-cancel" class="btn-cancel">Batal</button>
+        <button id="confirm-yes" class="btn-confirm">Ya, Lanjutkan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Alert Modal -->
+  <div id="custom-alert" class="custom-modal">
+    <div class="custom-modal-content alert-content">
+      <div class="custom-modal-icon success-icon">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <h3 id="alert-title">Berhasil!</h3>
+      <p id="alert-message">Operasi berhasil dilakukan</p>
+      <button id="alert-ok" class="btn-ok">OK</button>
+    </div>
+  </div>
+
+  <!-- WhatsApp Contact Modal -->
+  <div id="whatsapp-modal" class="custom-modal">
+    <div class="custom-modal-content whatsapp-content">
+      <div class="custom-modal-icon whatsapp-icon">
+        <i class="fab fa-whatsapp"></i>
+      </div>
+      <h3>Hubungi Penjual</h3>
+      <p>Silakan hubungi penjual melalui WhatsApp untuk melakukan negosiasi harga dan detail pengiriman.</p>
+      <div class="whatsapp-info">
+        <p><strong>Nomor Penjual:</strong></p>
+        <p class="phone-number">+62 812-3456-7890</p>
+      </div>
+      <div class="custom-modal-buttons">
+        <button id="whatsapp-cancel" class="btn-cancel">Batal</button>
+        <button id="whatsapp-contact" class="btn-whatsapp">
+          <i class="fab fa-whatsapp"></i> Hubungi via WhatsApp
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Negotiation Confirmation Modal -->
+  <div id="negotiation-modal" class="custom-modal">
+    <div class="custom-modal-content">
+      <div class="custom-modal-icon">
+        <i class="fas fa-handshake"></i>
+      </div>
+      <h3>Konfirmasi Negosiasi</h3>
+      <p>Apakah Anda sudah melakukan negosiasi dengan penjual dan menyetujui harga serta detail transaksi?</p>
+      <div class="custom-modal-buttons">
+        <button id="negotiation-no" class="btn-cancel">Belum, Hubungi Penjual</button>
+        <button id="negotiation-yes" class="btn-confirm">Sudah, Lanjut Bayar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payment Modal -->
+  <div id="payment-modal" class="custom-modal">
+    <div class="custom-modal-content payment-content">
+      <span class="modal-close-payment">&times;</span>
+      <div class="custom-modal-icon payment-icon">
+        <i class="fas fa-credit-card"></i>
+      </div>
+      <h3>Pembayaran</h3>
+      <div class="payment-info">
+        <p><strong>Total Pembayaran:</strong></p>
+        <p class="payment-total" id="payment-total">Rp 0</p>
+        <div class="payment-methods">
+          <h4>Pilih Metode Pembayaran:</h4>
+          <button class="payment-method-btn" data-method="BCA" data-account="1234567890" data-name="PT BAKOELAPTOP">
+            <i class="fas fa-university"></i> Transfer BCA
+          </button>
+          <button class="payment-method-btn" data-method="Mandiri" data-account="9876543210" data-name="PT BAKOELAPTOP">
+            <i class="fas fa-university"></i> Transfer Mandiri
+          </button>
+          <button class="payment-method-btn" data-method="GoPay" data-account="081234567890" data-name="BAKOELAPTOP">
+            <i class="fas fa-mobile-alt"></i> GoPay
+          </button>
+          <button class="payment-method-btn" data-method="OVO" data-account="081234567890" data-name="BAKOELAPTOP">
+            <i class="fas fa-mobile-alt"></i> OVO
+          </button>
+          <button class="payment-method-btn" data-method="QRIS" data-qris="true">
+            <i class="fas fa-qrcode"></i> QRIS
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payment Detail Modal -->
+  <div id="payment-detail-modal" class="custom-modal">
+    <div class="custom-modal-content payment-detail-content">
+      <span class="modal-close-detail">&times;</span>
+      <div class="payment-detail-header">
+        <div class="custom-modal-icon payment-icon">
+          <i class="fas fa-credit-card"></i>
+        </div>
+        <h3 id="payment-method-title">Transfer BCA</h3>
+      </div>
+      
+      <div class="payment-detail-body">
+        <!-- Bank Transfer Details -->
+        <div id="bank-details" class="payment-section">
+          <div class="detail-box">
+            <label>Nomor Rekening:</label>
+            <div class="copy-box">
+              <input type="text" id="account-number" readonly>
+              <button class="copy-btn" onclick="copyToClipboard('account-number')">
+                <i class="fas fa-copy"></i>
+              </button>
+            </div>
+          </div>
+          <div class="detail-box">
+            <label>Atas Nama:</label>
+            <p id="account-name" class="account-name"></p>
+          </div>
+          <div class="detail-box">
+            <label>Total Transfer:</label>
+            <p id="transfer-amount" class="transfer-amount"></p>
+          </div>
+        </div>
+
+        <!-- QRIS Details -->
+        <div id="qris-details" class="payment-section" style="display: none;">
+          <div class="qris-container">
+            <img src="https://via.placeholder.com/300x300/00d4aa/ffffff?text=QRIS+CODE" alt="QRIS Code" class="qris-image">
+            <p class="qris-info">Scan QR Code di atas menggunakan aplikasi pembayaran Anda</p>
+          </div>
+          <div class="detail-box">
+            <label>Total Pembayaran:</label>
+            <p id="qris-amount" class="transfer-amount"></p>
+          </div>
+        </div>
+
+        <!-- Upload Proof Section -->
+        <div class="upload-proof-section">
+          <h4><i class="fas fa-upload"></i> Upload Bukti Pembayaran</h4>
+          <div class="upload-area">
+            <input type="file" id="payment-proof" accept="image/*" style="display: none;">
+            <label for="payment-proof" class="upload-label">
+              <i class="fas fa-cloud-upload-alt"></i>
+              <span id="file-name">Klik untuk pilih file atau drag & drop</span>
+              <small>Format: JPG, PNG (Max 5MB)</small>
+            </label>
+            <div id="preview-container" style="display: none;">
+              <img id="preview-image" src="" alt="Preview">
+              <button class="remove-image-btn" onclick="removeImage()">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="payment-detail-actions">
+          <button id="payment-back" class="btn-secondary">
+            <i class="fas fa-arrow-left"></i> Kembali
+          </button>
+          <button id="payment-confirm" class="btn-primary" disabled>
+            <i class="fas fa-check"></i> Konfirmasi Pembayaran
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <script>
+  // === CUSTOM MODAL FUNCTIONS ===
+  function showCustomConfirm(message, onConfirm) {
+    const confirmModal = document.getElementById('custom-confirm');
+    const confirmMessage = document.getElementById('confirm-message');
+    const confirmYes = document.getElementById('confirm-yes');
+    const confirmCancel = document.getElementById('confirm-cancel');
+
+    confirmMessage.textContent = message;
+    confirmModal.classList.add('active');
+
+    // Remove old listeners
+    const newYesBtn = confirmYes.cloneNode(true);
+    const newCancelBtn = confirmCancel.cloneNode(true);
+    confirmYes.parentNode.replaceChild(newYesBtn, confirmYes);
+    confirmCancel.parentNode.replaceChild(newCancelBtn, confirmCancel);
+
+    // Add new listeners
+    newYesBtn.addEventListener('click', () => {
+      confirmModal.classList.remove('active');
+      onConfirm();
+    });
+
+    newCancelBtn.addEventListener('click', () => {
+      confirmModal.classList.remove('active');
+    });
+  }
+
+  function showCustomAlert(message, title = 'Berhasil!') {
+    const alertModal = document.getElementById('custom-alert');
+    const alertTitle = document.getElementById('alert-title');
+    const alertMessage = document.getElementById('alert-message');
+    const alertOk = document.getElementById('alert-ok');
+
+    alertTitle.textContent = title;
+    alertMessage.textContent = message;
+    alertModal.classList.add('active');
+
+    // Remove old listener
+    const newOkBtn = alertOk.cloneNode(true);
+    alertOk.parentNode.replaceChild(newOkBtn, alertOk);
+
+    // Add new listener
+    newOkBtn.addEventListener('click', () => {
+      alertModal.classList.remove('active');
+    });
+  }
+
+  function loadCart() {
+    const cartItems = document.getElementById('cart-items');
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    cartItems.innerHTML = '';
+
+    if (cart.length === 0) {
+      cartItems.innerHTML = '<p>Your cart is empty.</p>';
+    } else {
+      cart.forEach((item, index) => {
+        const div = document.createElement('div');
+        div.classList.add('cart-item');
+        div.innerHTML = `
+          <div class="cart-item-info">
+            <h4>${item.name}</h4>
+            <p>Rp ${item.price.toLocaleString('id-ID')}</p>
+          </div>
+          <button class="remove-item-btn" data-index="${index}">
+            <i class="fas fa-trash"></i> Remove
+          </button>
+        `;
+        cartItems.appendChild(div);
+      });
+
+      // Add event listeners to remove buttons
+      const removeBtns = document.querySelectorAll('.remove-item-btn');
+      removeBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const index = parseInt(btn.getAttribute('data-index'));
+          removeFromCart(index);
+        });
+      });
+    }
+
+    const total = cart.reduce((sum, item) => sum + item.price, 0);
+    document.getElementById('cart-total').textContent = 
+      'Rp ' + total.toLocaleString('id-ID');
+  }
+
+  function removeFromCart(index) {
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const removedItem = cart[index];
+    
+    showCustomConfirm(`Hapus "${removedItem.name}" dari keranjang?`, () => {
+      // Remove item from cart
+      cart.splice(index, 1);
+      localStorage.setItem('cart', JSON.stringify(cart));
+      
+      // Show confirmation
+      showCustomAlert(`${removedItem.name} berhasil dihapus dari keranjang.`);
+      
+      // Reload cart display
+      loadCart();
+    });
+  }
+
+  loadCart();
+
+  // === CHECKOUT BUTTON ===
+  document.getElementById('checkout-btn').addEventListener('click', async () => {
+    const user = window.firebaseAuth.currentUser;
+    
+    if (!user) {
+      showCustomAlert('Silakan login terlebih dahulu!', 'Perhatian');
+      return;
+    }
+    
+    try {
+      // Get cart from Firestore
+      const cartDoc = await window.firebaseDB.collection('carts').doc(user.uid).get();
+      
+      if (!cartDoc.exists || !cartDoc.data().items || cartDoc.data().items.length === 0) {
+        showCustomAlert('Keranjang Anda kosong!', 'Perhatian');
+        return;
+      }
+      
+      // Store cart items globally for WhatsApp message
+      window.currentCartItems = cartDoc.data().items;
+      
+      // Show negotiation confirmation modal
+      showNegotiationModal();
+      
+    } catch (error) {
+      console.error('Error checking cart:', error);
+      showCustomAlert('Terjadi kesalahan. Silakan coba lagi.', 'Error');
+    }
+  });
+
+  // === WHATSAPP CONTACT MODAL ===
+  function showWhatsAppModal() {
+    const whatsappModal = document.getElementById('whatsapp-modal');
+    const whatsappContact = document.getElementById('whatsapp-contact');
+    const whatsappCancel = document.getElementById('whatsapp-cancel');
+
+    whatsappModal.classList.add('active');
+
+    // Remove old listeners
+    const newContactBtn = whatsappContact.cloneNode(true);
+    const newCancelBtn = whatsappCancel.cloneNode(true);
+    whatsappContact.parentNode.replaceChild(newContactBtn, whatsappContact);
+    whatsappCancel.parentNode.replaceChild(newCancelBtn, whatsappCancel);
+
+    // Contact via WhatsApp
+    newContactBtn.addEventListener('click', () => {
+      const cartItems = window.currentCartItems || [];
+      
+      if (cartItems.length === 0) {
+        showCustomAlert('Keranjang kosong!', 'Perhatian');
+        return;
+      }
+      
+      let message = 'Halo, saya tertarik untuk membeli:\n\n';
+      
+      cartItems.forEach((item, index) => {
+        message += `${index + 1}. ${item.name} - Rp ${parseInt(item.price).toLocaleString('id-ID')}\n`;
+      });
+      
+      const total = cart.reduce((sum, item) => sum + item.price, 0);
+      message += `\nTotal: Rp ${total.toLocaleString('id-ID')}\n\n`;
+      message += 'Saya ingin melakukan negosiasi harga dan diskusi detail pengiriman.';
+
+      const phoneNumber = '6281234567890'; // Ganti dengan nomor penjual
+      const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+      
+      window.open(whatsappUrl, '_blank');
+      whatsappModal.classList.remove('active');
+      
+      // Show confirmation after contacting
+      setTimeout(() => {
+        showNegotiationModal();
+      }, 1000);
+    });
+
+    // Cancel
+    newCancelBtn.addEventListener('click', () => {
+      whatsappModal.classList.remove('active');
+    });
+  }
+
+  // === NEGOTIATION CONFIRMATION MODAL ===
+  function showNegotiationModal() {
+    const negotiationModal = document.getElementById('negotiation-modal');
+    const negotiationYes = document.getElementById('negotiation-yes');
+    const negotiationNo = document.getElementById('negotiation-no');
+
+    negotiationModal.classList.add('active');
+
+    // Remove old listeners
+    const newYesBtn = negotiationYes.cloneNode(true);
+    const newNoBtn = negotiationNo.cloneNode(true);
+    negotiationYes.parentNode.replaceChild(newYesBtn, negotiationYes);
+    negotiationNo.parentNode.replaceChild(newNoBtn, negotiationNo);
+
+    // Already negotiated - go to payment
+    newYesBtn.addEventListener('click', () => {
+      negotiationModal.classList.remove('active');
+      showPaymentModal();
+    });
+
+    // Not yet negotiated - contact seller
+    newNoBtn.addEventListener('click', () => {
+      negotiationModal.classList.remove('active');
+      showWhatsAppModal();
+    });
+  }
+
+  // === PAYMENT MODAL ===
+  function showPaymentModal() {
+    const paymentModal = document.getElementById('payment-modal');
+    const paymentTotal = document.getElementById('payment-total');
+    const modalClosePayment = document.querySelector('.modal-close-payment');
+    const paymentMethods = document.querySelectorAll('.payment-method-btn');
+
+    const cartItems = window.currentCartItems || [];
+    const total = cartItems.reduce((sum, item) => sum + parseInt(item.price), 0);
+    paymentTotal.textContent = `Rp ${total.toLocaleString('id-ID')}`;
+
+    paymentModal.classList.add('active');
+
+    // Remove old listener to prevent duplicates
+    const newCloseBtn = modalClosePayment.cloneNode(true);
+    modalClosePayment.parentNode.replaceChild(newCloseBtn, modalClosePayment);
+
+    // Close button (X)
+    newCloseBtn.addEventListener('click', () => {
+      paymentModal.classList.remove('active');
+    });
+
+    // Close when clicking outside modal
+    paymentModal.addEventListener('click', (e) => {
+      if (e.target === paymentModal) {
+        paymentModal.classList.remove('active');
+      }
+    });
+
+    // Payment method selection
+    paymentMethods.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const method = btn.getAttribute('data-method');
+        const account = btn.getAttribute('data-account');
+        const name = btn.getAttribute('data-name');
+        const isQris = btn.getAttribute('data-qris');
+        
+        paymentModal.classList.remove('active');
+        showPaymentDetailModal(method, account, name, isQris, total);
+      });
+    });
+  }
+
+  // === PAYMENT DETAIL MODAL ===
+  function showPaymentDetailModal(method, account, name, isQris, total) {
+    const detailModal = document.getElementById('payment-detail-modal');
+    const methodTitle = document.getElementById('payment-method-title');
+    const modalCloseDetail = document.querySelector('.modal-close-detail');
+    const bankDetails = document.getElementById('bank-details');
+    const qrisDetails = document.getElementById('qris-details');
+    const paymentBack = document.getElementById('payment-back');
+    const paymentConfirm = document.getElementById('payment-confirm');
+
+    // Set title
+    methodTitle.textContent = isQris ? 'QRIS Payment' : `Transfer ${method}`;
+
+    // Show appropriate section
+    if (isQris) {
+      bankDetails.style.display = 'none';
+      qrisDetails.style.display = 'block';
+      document.getElementById('qris-amount').textContent = `Rp ${total.toLocaleString('id-ID')}`;
+    } else {
+      bankDetails.style.display = 'block';
+      qrisDetails.style.display = 'none';
+      document.getElementById('account-number').value = account;
+      document.getElementById('account-name').textContent = name;
+      document.getElementById('transfer-amount').textContent = `Rp ${total.toLocaleString('id-ID')}`;
+    }
+
+    detailModal.classList.add('active');
+
+    // Remove old listeners to prevent duplicates
+    const newCloseBtn = modalCloseDetail.cloneNode(true);
+    const newBackBtn = paymentBack.cloneNode(true);
+    const newConfirmBtn = paymentConfirm.cloneNode(true);
+    modalCloseDetail.parentNode.replaceChild(newCloseBtn, modalCloseDetail);
+    paymentBack.parentNode.replaceChild(newBackBtn, paymentBack);
+    paymentConfirm.parentNode.replaceChild(newConfirmBtn, paymentConfirm);
+
+    // Close button (X)
+    newCloseBtn.addEventListener('click', () => {
+      detailModal.classList.remove('active');
+      resetPaymentForm();
+    });
+
+    // Back button
+    newBackBtn.addEventListener('click', () => {
+      detailModal.classList.remove('active');
+      resetPaymentForm();
+      showPaymentModal();
+    });
+
+    // Confirm button
+    newConfirmBtn.addEventListener('click', () => {
+      processPaymentWithProof(method);
+    });
+
+    // Close when clicking outside modal
+    detailModal.addEventListener('click', (e) => {
+      if (e.target === detailModal) {
+        detailModal.classList.remove('active');
+        resetPaymentForm();
+      }
+    });
+  }
+
+  // === FILE UPLOAD HANDLER ===
+  const paymentProofInput = document.getElementById('payment-proof');
+  const fileName = document.getElementById('file-name');
+  const previewContainer = document.getElementById('preview-container');
+  const previewImage = document.getElementById('preview-image');
+
+  paymentProofInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Check file size (5MB max)
+      if (file.size > 5 * 1024 * 1024) {
+        showCustomAlert('Ukuran file terlalu besar! Maksimal 5MB', 'Error');
+        return;
+      }
+
+      // Check file type
+      if (!file.type.startsWith('image/')) {
+        showCustomAlert('File harus berupa gambar!', 'Error');
+        return;
+      }
+
+      // Show preview
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        previewImage.src = e.target.result;
+        previewContainer.style.display = 'block';
+        fileName.textContent = file.name;
+        // Get current button element (in case it was cloned)
+        const paymentConfirm = document.getElementById('payment-confirm');
+        paymentConfirm.disabled = false;
+        paymentConfirm.classList.add('enabled');
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  // === COPY TO CLIPBOARD ===
+  window.copyToClipboard = function(elementId) {
+    const input = document.getElementById(elementId);
+    input.select();
+    document.execCommand('copy');
+    showCustomAlert('Nomor rekening berhasil disalin!', 'Berhasil');
+  };
+
+  // === REMOVE IMAGE ===
+  window.removeImage = function() {
+    const paymentProofInput = document.getElementById('payment-proof');
+    const previewContainer = document.getElementById('preview-container');
+    const fileName = document.getElementById('file-name');
+    const paymentConfirm = document.getElementById('payment-confirm');
+    
+    paymentProofInput.value = '';
+    previewContainer.style.display = 'none';
+  // === RESET PAYMENT FORM ===
+  function resetPaymentForm() {
+    const paymentProofInput = document.getElementById('payment-proof');
+    const previewContainer = document.getElementById('preview-container');
+    const fileName = document.getElementById('file-name');
+    const paymentConfirm = document.getElementById('payment-confirm');
+    
+    paymentProofInput.value = '';
+    previewContainer.style.display = 'none';
+    fileName.textContent = 'Klik untuk pilih file atau drag & drop';
+    paymentConfirm.disabled = true;
+    paymentConfirm.classList.remove('enabled');
+  } paymentProofInput.value = '';
+    previewContainer.style.display = 'none';
+    fileName.textContent = 'Klik untuk pilih file atau drag & drop';
+    paymentConfirm.disabled = true;
+    paymentConfirm.classList.remove('enabled');
+  }
+
+  // === PROCESS PAYMENT WITH PROOF ===
+  function processPaymentWithProof(method) {
+    const detailModal = document.getElementById('payment-detail-modal');
+    const file = paymentProofInput.files[0];
+
+    if (!file) {
+      showCustomAlert('Silakan upload bukti pembayaran terlebih dahulu!', 'Perhatian');
+      return;
+    }
+
+    detailModal.classList.remove('active');
+    resetPaymentForm();
+
+    showCustomConfirm(`Konfirmasi pembayaran via ${method}? Bukti pembayaran akan diverifikasi oleh admin.`, () => {
+      // Save payment proof to localStorage (in real app, upload to server)
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const proofData = {
+          method: method,
+          timestamp: new Date().toISOString(),
+          proof: e.target.result, // Base64 image
+          status: 'pending'
+        };
+
+        // Process checkout
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        let purchased = JSON.parse(localStorage.getItem('purchased')) || [];
+
+        // Get current user info
+        const currentUser = JSON.parse(localStorage.getItem('currentUser')) || { username: 'Guest' };
+        const users = JSON.parse(localStorage.getItem('users')) || [];
+        const user = users.find(u => u.username === currentUser.username) || {};
+
+        // Calculate total
+        const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+        // Create order for admin
+        const orderId = 'ORD' + Date.now();
+        const order = {
+          orderId: orderId,
+          customerName: currentUser.username,
+          customerEmail: user.email || '',
+          customerPhone: user.phone || '',
+          shippingAddress: user.address || '',
+          items: cart.map(item => ({
+            name: item.name,
+            price: item.price,
+            quantity: item.quantity,
+            image: item.image || 'https://via.placeholder.com/100'
+          })),
+          total: total,
+          paymentMethod: method,
+          paymentProof: e.target.result,
+          status: 'paid', // paid status means waiting for admin confirmation
+          date: new Date().toISOString()
+        };
+
+        // Save to allOrders for admin
+        let allOrders = JSON.parse(localStorage.getItem('allOrders')) || [];
+        allOrders.push(order);
+        localStorage.setItem('allOrders', JSON.stringify(allOrders));
+
+        // Add payment proof to each item
+        const purchasedItems = cart.map(item => ({
+          ...item,
+          paymentProof: proofData,
+          orderId: orderId
+        }));
+
+        purchased = [...purchased, ...purchasedItems];
+        localStorage.setItem('purchased', JSON.stringify(purchased));
+
+        // Clear cart
+        localStorage.removeItem('cart');
+
+        showCustomAlert(`Pembayaran via ${method} berhasil disubmit! Order ID: ${orderId}. Bukti pembayaran Anda akan diverifikasi dalam 1x24 jam.`, 'Pembayaran Berhasil!');
+        
+        // Reload cart
+        setTimeout(() => {
+          loadCart();
+        }, 1500);
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+</script>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-contact">
+        <div class="footer-contact-item">
+          <i class="fab fa-whatsapp"></i>
+          <a href="https://wa.me/6285749406558" target="_blank">+62 857-4940-6558</a>
+        </div>
+        <div class="footer-contact-item">
+          <i class="fab fa-instagram"></i>
+          <a href="https://www.instagram.com/bakoelaptop/" target="_blank">@bakoelaptop</a>
+        </div>
+      </div>
+      <div class="footer-divider"></div>
+      <p class="footer-copyright">&copy; 2025 BAKOELAPTOP. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+  <!-- Firebase Config & Services -->
+  <script src="firebase-config.js"></script>
+  <script src="script/utils.js"></script>
+  <script src="firebase-auth.js"></script>
+  <script src="firebase-db.js"></script>
+  <script src="script/cart.js"></script>
+  <script src="script/navbar.js"></script>
+</body>
+</html>

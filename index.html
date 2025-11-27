@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="BAKOELAPTOP - Marketplace jual beli laptop bekas terpercaya. Beli, jual, atau tukar laptop dengan mudah dan aman bersama ribuan pengguna terpercaya.">
+  <meta name="keywords" content="jual beli laptop, laptop bekas, marketplace laptop, tukar laptop, beli laptop bekas, jual laptop">
+  <meta name="author" content="BAKOELAPTOP">
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://bakoelaptop.com/">
+  <meta property="og:title" content="BAKOELAPTOP - Your Laptop Marketplace">
+  <meta property="og:description" content="Beli, jual, atau tukar laptop dengan mudah dan aman bersama ribuan pengguna terpercaya.">
+  <meta property="og:image" content="https://bakoelaptop.com/laptop.png">
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://bakoelaptop.com/">
+  <meta property="twitter:title" content="BAKOELAPTOP - Your Laptop Marketplace">
+  <meta property="twitter:description" content="Beli, jual, atau tukar laptop dengan mudah dan aman bersama ribuan pengguna terpercaya.">
+  <meta property="twitter:image" content="https://bakoelaptop.com/laptop.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="alternate icon" href="favicon.ico">
+  
+  <title>Home - BAKOELAPTOP | Marketplace Laptop Terpercaya</title>
+  <link rel="stylesheet" href="style/global.css">
+  <link rel="stylesheet" href="style/home.css">
+  <link rel="stylesheet" href="style/loading.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="logo">BAKOELAPTOP</div>
+
+    <nav class="main-nav">
+      <a href="index.html">Home</a>
+      <a href="buy.html">Buy</a>
+      <a href="sell.html">Sell</a>
+      <a href="trade.html">Trade</a>
+      
+      <!-- Auth Buttons (shown when not logged in) -->
+      <div id="auth-buttons" style="display: none; gap: 10px;">
+        <a href="login.html" class="btn-signin">Sign In</a>
+        <a href="register.html" class="btn-signup">Sign Up</a>
+      </div>
+      
+      <!-- User Menu (shown when logged in) -->
+      <div id="user-menu" style="display: none; gap: 15px; align-items: center;">
+        <a href="cart.html"><img src="https://cdn-icons-png.flaticon.com/512/34/34568.png" alt="Cart" style="width:24px; vertical-align: middle;"></a>
+        <div class="profile-menu">
+          <img src="https://cdn-icons-png.flaticon.com/512/1077/1077114.png" alt="Profile" style="width:24px; vertical-align: middle; cursor:pointer;">
+          <ul class="dropdown">
+            <li><a href="profile.html">My Account</a></li>
+            <li><a href="#" id="logout-btn">Logout</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-text">
+      <h1>Your Laptop Marketplace</h1>
+      <p>Buy, sell, or trade laptops easily and safely with trusted users near you. Join thousands of satisfied customers today!</p>
+      <a href="buy.html" class="cta-button">Start Exploring →</a>
+    </div>
+    <div class="hero-img">
+      <img src="assets/images/image 2.png" alt="Laptop Hero" onerror="this.src='https://via.placeholder.com/600x400/667eea/ffffff?text=BAKOELAPTOP'">
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="features">
+    <div class="feature-card" onclick="window.location.href='buy.html'">
+      <h2>Buy</h2>
+      <p>Find great deals from trusted sellers. Browse through hundreds of quality laptops.</p>
+    </div>
+    <div class="feature-card" onclick="window.location.href='sell.html'">
+      <h2>Sell</h2>
+      <p>Post your laptop and reach potential buyers quickly. Get the best price for your device.</p>
+    </div>
+    <div class="feature-card" onclick="window.location.href='trade.html'">
+      <h2>Trade</h2>
+      <p>Looking for an upgrade? Trade your laptop safely with other users.</p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-contact">
+        <div class="footer-contact-item">
+          <i class="fab fa-whatsapp"></i>
+          <a href="https://wa.me/6285749406558" target="_blank">+62 857-4940-6558</a>
+        </div>
+        <div class="footer-contact-item">
+          <i class="fab fa-instagram"></i>
+          <a href="https://www.instagram.com/bakoelaptop/" target="_blank">@bakoelaptop</a>
+        </div>
+      </div>
+      <div class="footer-divider"></div>
+      <p class="footer-copyright">&copy; 2025 BAKOELAPTOP. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+  <!-- Firebase Config & Services -->
+  <script src="firebase-config.js"></script>
+  <script src="script/utils.js"></script>
+  <script src="firebase-auth.js"></script>
+  <script src="firebase-db.js"></script>
+  <script src="script/navbar.js"></script>
+</body>
+</html>

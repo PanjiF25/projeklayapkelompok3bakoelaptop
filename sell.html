@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Jual laptop bekas Anda dengan mudah dan cepat di BAKOELAPTOP. Dapatkan harga terbaik untuk laptop Anda.">
+  <meta name="keywords" content="jual laptop bekas, jual laptop cepat, marketplace laptop">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  
+  <title>Sell Laptop - BAKOELAPTOP | Jual Laptop Bekas Anda</title>
+  <link rel="stylesheet" href="style/global.css">
+  <link rel="stylesheet" href="style/sell.css">
+  <link rel="stylesheet" href="style/loading.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="logo">BAKOELAPTOP</div>
+
+    <nav class="main-nav">
+      <a href="index.html">Home</a>
+      <a href="buy.html">Buy</a>
+      <a href="sell.html" class="active">Sell</a>
+      <a href="trade.html">Trade</a>
+      
+      <!-- Auth Buttons (shown when not logged in) -->
+      <div id="auth-buttons" style="display: none; gap: 10px;">
+        <a href="login.html" class="btn-signin">Sign In</a>
+        <a href="register.html" class="btn-signup">Sign Up</a>
+      </div>
+      
+      <!-- User Menu (shown when logged in) -->
+      <div id="user-menu" style="display: none; gap: 15px; align-items: center;">
+        <a href="cart.html"><img src="https://cdn-icons-png.flaticon.com/512/34/34568.png" alt="Cart" style="width:24px; vertical-align: middle;"></a>
+        <div class="profile-menu">
+          <img src="https://cdn-icons-png.flaticon.com/512/1077/1077114.png" alt="Profile" style="width:24px; vertical-align: middle; cursor:pointer;">
+          <ul class="dropdown">
+            <li><a href="profile.html">My Account</a></li>
+            <li><a href="#" id="logout-btn">Logout</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Sell Form Section -->
+  <main class="sell-container">
+    <!-- Header -->
+    <div class="sell-header">
+      <h1><i class="fa-solid fa-store"></i> Sell Your Gadget to Us</h1>
+      <p class="desc">Jual laptop atau handphone bekas Anda ke BAKOELAPTOP. Kami akan menilai dan membeli perangkat Anda dengan harga terbaik.</p>
+    </div>
+
+    <!-- How It Works Info -->
+    <div class="info-card">
+      <div class="info-header">
+        <i class="fas fa-info-circle"></i>
+        <h3>How It Works</h3>
+      </div>
+      <div class="info-steps">
+        <div class="info-step">
+          <div class="step-number">1</div>
+          <div class="step-content">
+            <h4>Submit Your Device</h4>
+            <p>Fill in the form with your device details and photos</p>
+          </div>
+        </div>
+        <div class="info-step">
+          <div class="step-number">2</div>
+          <div class="step-content">
+            <h4>We Review & Offer</h4>
+            <p>Our team will evaluate and contact you with a price offer</p>
+          </div>
+        </div>
+        <div class="info-step">
+          <div class="step-number">3</div>
+          <div class="step-content">
+            <h4>Get Paid</h4>
+            <p>Once accepted, we'll buy your device and pay you directly</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sell Form Card -->
+    <div class="sell-card">
+      <div class="card-header">
+        <i class="fas fa-clipboard-list"></i>
+        <h2>Product Information</h2>
+        <p>Tell us about your gadget. We'll review it and contact you with an offer.</p>
+      </div>
+
+      <form id="sellForm" class="sell-form">
+        <div class="card-body">
+          <!-- Category -->
+          <div class="form-group">
+            <label><i class="fas fa-layer-group"></i> Kategori Produk</label>
+            <select id="productCategory" required>
+              <option value="">Pilih Kategori</option>
+              <option value="laptop">Laptop</option>
+              <option value="handphone">Handphone</option>
+            </select>
+          </div>
+
+          <!-- Product Name -->
+          <div class="form-group">
+            <label><i class="fas fa-tag"></i> Nama Produk</label>
+            <input type="text" id="laptopName" placeholder="Contoh: ASUS TUF Gaming F15 atau iPhone 14 Pro" required>
+          </div>
+
+          <!-- Specifications -->
+          <div class="form-group">
+            <label><i class="fas fa-list-ul"></i> Spesifikasi</label>
+            <textarea id="laptopSpecs" rows="4" placeholder="Contoh: Intel i7, RTX 3060, 16GB RAM, 1TB SSD" required></textarea>
+          </div>
+
+          <!-- Price -->
+          <div class="form-group">
+            <label><i class="fas fa-money-bill-wave"></i> Harga (Rp)</label>
+            <input type="number" id="laptopPrice" placeholder="15000000" required>
+          </div>
+
+          <!-- Condition -->
+          <div class="form-group">
+            <label><i class="fas fa-star-half-alt"></i> Kondisi Produk</label>
+            <div class="condition-buttons">
+              <button type="button" class="condition-btn" data-value="new">
+                <i class="fas fa-sparkles"></i>
+                <span>Baru</span>
+                <small>Brand new, masih dalam kemasan</small>
+              </button>
+              <button type="button" class="condition-btn" data-value="like-new">
+                <i class="fas fa-star"></i>
+                <span>Seperti Baru</span>
+                <small>Hampir tidak ada bekas pakai</small>
+              </button>
+              <button type="button" class="condition-btn" data-value="good">
+                <i class="fas fa-check-circle"></i>
+                <span>Baik</span>
+                <small>Bekas pakai normal, fungsi sempurna</small>
+              </button>
+              <button type="button" class="condition-btn" data-value="fair">
+                <i class="fas fa-tools"></i>
+                <span>Cukup</span>
+                <small>Bekas pakai terlihat, fungsi normal</small>
+              </button>
+            </div>
+            <input type="hidden" id="productCondition" required>
+          </div>
+
+          <!-- Image Upload -->
+          <div class="form-group">
+            <label><i class="fas fa-camera"></i> Foto Produk (Maksimal 5 foto)</label>
+            <div class="image-upload-area">
+              <input type="file" id="laptopImage" accept="image/*" multiple required>
+              <div class="upload-placeholder">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <p>Click to upload or drag and drop</p>
+                <span>PNG, JPG up to 5MB per image (max 5 images)</span>
+              </div>
+              <div id="imagePreviewContainer" class="image-preview-container"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <button type="submit" class="submit-btn">
+            <i class="fas fa-paper-plane"></i> Submit Sell Request
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="previewSection" class="preview-section" style="display:none;">
+      <div class="preview-section-content">
+        <div class="success-icon">
+          <i class="fas fa-check-circle"></i>
+        </div>
+        <h3>Sell Request Submitted!</h3>
+        <p class="success-message">Terima kasih! Tim kami sedang meninjau gadget Anda. Kami akan menghubungi Anda untuk negosiasi harga dan proses pembelian.</p>
+        
+        <div class="preview-card">
+          <img id="previewImage" src="" alt="Preview">
+          <div class="preview-info">
+            <h4 id="previewName"></h4>
+            <p id="previewSpecs"></p>
+            <span class="preview-price" id="previewPrice"></span>
+            <span class="preview-condition" id="previewCondition"></span>
+          </div>
+        </div>
+        
+        <div class="contact-info">
+          <i class="fab fa-whatsapp"></i>
+          <p>Atau hubungi kami langsung untuk negosiasi cepat:</p>
+          <strong>+62 857-4940-6558</strong>
+        </div>
+        
+        <button class="btn-done" onclick="window.location.reload()">Sell Another Device</button>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Wait for DOM
+    document.addEventListener('DOMContentLoaded', () => {
+      // Profile dropdown handled by navbar.js now
+      
+      // Initialize condition buttons
+      initConditionButtons();
+      
+      // Initialize image preview
+      initImagePreview();
+      
+      // === FORM HANDLER WITH VALIDATION ===
+      const form = document.getElementById('sellForm');
+      const preview = document.getElementById('previewSection');
+      const submitBtn = form.querySelector('.submit-btn');
+
+      if (!form) return; // Guard
+
+      form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // Check if user is logged in
+      if (!window.firebaseAuth || !window.firebaseAuth.currentUser) {
+        showError('Anda harus login untuk menjual produk!');
+        setTimeout(() => {
+          window.location.href = 'login.html';
+        }, 2000);
+        return;
+      }
+
+      const category = document.getElementById('productCategory').value;
+      const name = document.getElementById('laptopName').value.trim();
+      const specs = document.getElementById('laptopSpecs').value.trim();
+      const price = document.getElementById('laptopPrice').value.trim();
+      const condition = document.getElementById('productCondition').value;
+      const imageInput = document.getElementById('laptopImage');
+
+      // Validation
+      if (!category) {
+        showError('Pilih kategori produk!');
+        return;
+      }
+
+      if (!name || name.length < 3) {
+        showError('Nama produk harus minimal 3 karakter');
+        return;
+      }
+
+      if (!specs || specs.length < 10) {
+        showError('Spesifikasi harus minimal 10 karakter');
+        return;
+      }
+
+      if (!price || parseInt(price) < 100000) {
+        showError('Harga minimal Rp 100.000');
+        return;
+      }
+
+      if (!condition) {
+        showError('Pilih kondisi produk!');
+        return;
+      }
+
+      if (!imageInput.files || imageInput.files.length === 0) {
+        showError('Harap unggah minimal 1 foto produk!');
+        return;
+      }
+
+      if (imageInput.files.length > 5) {
+        showError('Maksimal 5 foto produk!');
+        return;
+      }
+
+      // Validate all image files
+      for (let i = 0; i < imageInput.files.length; i++) {
+        const validation = validateImageFile(imageInput.files[i], 5);
+        if (!validation.valid) {
+          showError(`Foto ${i + 1}: ${validation.errors.join(', ')}`);
+          return;
+        }
+      }
+
+      // Show loading
+      setButtonLoading(submitBtn, true);
+      showLoading('Mengunggah produk ke Firestore...');
+
+      try {
+        // Convert all images to base64
+        const imagePromises = [];
+        for (let i = 0; i < imageInput.files.length; i++) {
+          imagePromises.push(fileToBase64(imageInput.files[i]));
+        }
+        const imagesBase64 = await Promise.all(imagePromises);
+
+        // Get current user
+        const user = window.firebaseAuth.currentUser;
+
+        // Create product data
+        const productData = {
+          name: sanitizeInput(name),
+          specs: sanitizeInput(specs),
+          price: parseInt(price),
+          category: category,
+          condition: condition,
+          images: imagesBase64, // Array of base64 images
+          imageURL: imagesBase64[0], // First image as main image for backward compatibility
+          sellerId: user.uid,
+          sellerEmail: user.email,
+          sellerName: user.displayName || 'Anonymous',
+          status: 'pending', // pending, approved, rejected
+          sold: false,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+
+        console.log('📤 Uploading product to Firestore...');
+
+        // Save to Firestore
+        const docRef = await window.firebaseDB.collection('products').add(productData);
+
+        console.log('✅ Product added with ID:', docRef.id);
+
+        // Show preview
+        document.getElementById('previewImage').src = imagesBase64[0];
+        document.getElementById('previewName').textContent = name;
+        document.getElementById('previewSpecs').textContent = specs;
+        document.getElementById('previewPrice').textContent = formatCurrency(parseInt(price));
+        document.getElementById('previewCondition').textContent = getConditionLabel(condition);
+        preview.style.display = "flex";
+
+        // Hide loading
+        hideLoading();
+        setButtonLoading(submitBtn, false);
+
+        // Show success with info about approval
+        showSuccess('Sell request submitted successfully! We will review and contact you soon. WhatsApp: +62 857-4940-6558');
+        
+        // Scroll to preview
+        preview.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        // Scroll to preview
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      } catch (error) {
+        console.error('❌ Error uploading product:', error);
+        hideLoading();
+        setButtonLoading(submitBtn, false);
+        showError('Gagal mengunggah produk: ' + error.message);
+      }
+      });
+    });
+    
+    // Initialize condition buttons
+    function initConditionButtons() {
+      const conditionBtns = document.querySelectorAll('.condition-btn');
+      const hiddenInput = document.getElementById('productCondition');
+
+      conditionBtns.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          
+          // Remove selected from all
+          conditionBtns.forEach(b => b.classList.remove('selected'));
+          
+          // Add selected to clicked
+          this.classList.add('selected');
+          
+          // Update hidden input
+          hiddenInput.value = this.getAttribute('data-value');
+        });
+      });
+    }
+
+    // Initialize image preview
+    function initImagePreview() {
+      const fileInput = document.getElementById('laptopImage');
+      const previewContainer = document.getElementById('imagePreviewContainer');
+      const placeholder = document.querySelector('.upload-placeholder');
+
+      fileInput.addEventListener('change', function() {
+        const files = this.files;
+        previewContainer.innerHTML = ''; // Clear previous previews
+        
+        if (files.length > 0) {
+          placeholder.style.display = 'none';
+          
+          if (files.length > 5) {
+            showError('Maksimal 5 foto!');
+            this.value = '';
+            placeholder.style.display = 'block';
+            return;
+          }
+          
+          Array.from(files).forEach((file, index) => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+              const imgWrapper = document.createElement('div');
+              imgWrapper.className = 'preview-img-wrapper';
+              
+              const img = document.createElement('img');
+              img.src = e.target.result;
+              img.className = 'image-preview';
+              
+              const badge = document.createElement('span');
+              badge.className = 'image-badge';
+              badge.textContent = index === 0 ? 'Main' : `${index + 1}`;
+              
+              imgWrapper.appendChild(img);
+              imgWrapper.appendChild(badge);
+              previewContainer.appendChild(imgWrapper);
+            };
+            reader.readAsDataURL(file);
+          });
+        } else {
+          placeholder.style.display = 'block';
+        }
+      });
+    }
+
+    // Helper function to get condition label
+    function getConditionLabel(condition) {
+      const labels = {
+        'new': 'Baru',
+        'like-new': 'Seperti Baru',
+        'good': 'Baik',
+        'fair': 'Cukup'
+      };
+      return labels[condition] || condition;
+    }
+    
+    // Helper function to convert file to base64
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+  </script>
+
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-contact">
+        <div class="footer-contact-item">
+          <i class="fab fa-whatsapp"></i>
+          <a href="https://wa.me/6285749406558" target="_blank">+62 857-4940-6558</a>
+        </div>
+        <div class="footer-contact-item">
+          <i class="fab fa-instagram"></i>
+          <a href="https://www.instagram.com/bakoelaptop/" target="_blank">@bakoelaptop</a>
+        </div>
+      </div>
+      <div class="footer-divider"></div>
+      <p class="footer-copyright">&copy; 2025 BAKOELAPTOP. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+  <!-- Firebase Config & Services -->
+  <script src="firebase-config.js"></script>
+  <script src="script/utils.js"></script>
+  <script src="firebase-auth.js"></script>
+  <script src="firebase-db.js"></script>
+  <script src="script/navbar.js"></script>
+</body>
+</html>

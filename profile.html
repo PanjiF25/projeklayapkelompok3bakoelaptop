@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Kelola profil dan akun Anda di BAKOELAPTOP. Update informasi pribadi dan pengaturan akun.">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    
+    <title>My Profile - BAKOELAPTOP | Kelola Akun Anda</title>
+    <link rel="stylesheet" href="style/global.css">
+    <link rel="stylesheet" href="style/loading.css">
+    <link rel="stylesheet" href="profile.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+<header class="navbar">
+  <div class="logo">BAKOELAPTOP</div>
+
+  <nav class="main-nav">
+    <a href="index.html">Home</a>
+    <a href="buy.html">Buy</a>
+    <a href="sell.html">Sell</a>
+    <a href="trade.html">Trade</a>
+    
+    <!-- Auth Buttons (shown when not logged in) -->
+    <div id="auth-buttons" style="display: flex; gap: 10px;">
+      <a href="login.html" class="btn-signin">Sign In</a>
+      <a href="register.html" class="btn-signup">Sign Up</a>
+    </div>
+    
+    <!-- User Menu (shown when logged in) -->
+    <div id="user-menu" style="display: none; gap: 15px; align-items: center;">
+      <a href="cart.html"><img src="https://cdn-icons-png.flaticon.com/512/34/34568.png" alt="Cart" style="width:24px; vertical-align: middle;"></a>
+      <div class="profile-menu">
+        <img src="https://cdn-icons-png.flaticon.com/512/1077/1077114.png" alt="Profile" style="width:24px; vertical-align: middle; cursor:pointer;">
+        <ul class="dropdown">
+          <li><a href="profile.html">My Account</a></li>
+          <li><a href="#" id="logout-btn">Logout</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>
+
+    <div class="container">
+        <aside class="sidebar">
+            <div class="profile-summary">
+                <div class="avatar-container">
+                    <div class="avatar-skeleton" id="avatar-skeleton">
+                        <div class="skeleton-loader"></div>
+                    </div>
+                    <img alt="User Avatar" class="avatar" id="sidebar-avatar" style="display: none;">
+                    <div class="avatar-overlay">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                    <input type="file" id="avatar-upload" accept="image/*" style="display: none;">
+                </div>
+                <h3 id="sidebar-username" class="skeleton-text">Loading...</h3>
+                <p class="user-email" id="sidebar-email"></p>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="menu-item active" data-section="profile">
+                        <i class="fas fa-user-circle"></i> My Profile
+                    </li>
+                    <li class="menu-item" data-section="password">
+                        <i class="fas fa-lock"></i> Change Password
+                    </li>
+                    <li class="menu-item" data-section="products">
+                        <i class="fas fa-store"></i> My Products
+                    </li>
+                    <li class="menu-item" data-section="orders">
+                        <i class="fas fa-shopping-bag"></i> Order History
+                    </li>
+                    <li class="menu-item" data-section="status">
+                        <i class="fas fa-clipboard-list"></i> Order Status
+                    </li>
+                </ul>
+            </nav>
+            <button class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log Out</button>
+        </aside>
+
+        <main class="main-content">
+            <!-- Profile Section -->
+            <section id="profile-section" class="content-section active">
+                <div class="section-header">
+                    <h1><i class="fas fa-user-circle"></i> My Profile</h1>
+                    <p>Manage your profile information to control, protect and secure your account.</p>
+                </div>
+                
+                <form class="profile-form">
+                    <div class="profile-photo-section">
+                        <div class="photo-container">
+                            <div class="photo-skeleton" id="photo-skeleton">
+                                <div class="skeleton-loader"></div>
+                            </div>
+                            <img alt="Profile Photo" class="profile-photo" id="profile-photo" style="display: none;">
+                            <button type="button" class="change-photo-btn" id="change-photo-btn">
+                                <i class="fas fa-camera"></i> Change Photo
+                            </button>
+                        </div>
+                        <div class="photo-info">
+                            <h3>Profile Photo</h3>
+                            <p>Update your profile picture. JPG, PNG or GIF (Max 2MB)</p>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="username">Username</label>
+                            <input type="text" id="username" name="username" placeholder="Enter your username">
+                        </div>
+                        <div class="form-group">
+                            <label for="fullname">Full Name</label>
+                            <input type="text" id="fullname" name="fullname" placeholder="Enter your full name">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="tel" id="phone" name="phone" placeholder="08xxxxxxxxxx">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="gender">Gender</label>
+                            <select id="gender" name="gender">
+                                <option value="">Select Gender</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="dob">Date of Birth</label>
+                            <input type="date" id="dob" name="dob">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="address">Address</label>
+                        <textarea id="address" name="address" rows="3" placeholder="Enter your complete address"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="save-btn"><i class="fas fa-save"></i> Save Changes</button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Change Password Section -->
+            <section id="password-section" class="content-section">
+                <div class="section-header">
+                    <h1><i class="fas fa-lock"></i> Change Password</h1>
+                    <p>Update your password to keep your account secure.</p>
+                </div>
+                
+                <form class="password-form">
+                    <div class="form-group">
+                        <label for="current-password">Current Password</label>
+                        <input type="password" id="current-password" name="current-password" placeholder="Enter current password">
+                    </div>
+                    <div class="form-group">
+                        <label for="new-password">New Password</label>
+                        <input type="password" id="new-password" name="new-password" placeholder="Enter new password">
+                    </div>
+                    <div class="form-group">
+                        <label for="confirm-password">Confirm New Password</label>
+                        <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirm new password">
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="save-btn"><i class="fas fa-key"></i> Update Password</button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- My Products Section -->
+            <section id="products-section" class="content-section">
+                <div class="section-header">
+                    <h1><i class="fas fa-store"></i> My Products</h1>
+                    <p>Track your sell requests to BAKOELAPTOP. Admin will review and purchase your products.</p>
+                </div>
+                
+                <div class="status-tabs">
+                    <button class="tab-btn active" data-filter="all">All Requests</button>
+                    <button class="tab-btn" data-filter="pending">
+                        <i class="fas fa-clock"></i> Under Review
+                    </button>
+                    <button class="tab-btn" data-filter="approved">
+                        <i class="fas fa-check-circle"></i> Accepted
+                    </button>
+                    <button class="tab-btn" data-filter="rejected">
+                        <i class="fas fa-times-circle"></i> Declined
+                    </button>
+                </div>
+
+                <div id="products-list" class="products-container">
+                    <div class="loading-products">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Loading your products...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Order History Section -->
+            <section id="orders-section" class="content-section">
+                <div class="section-header">
+                    <h1><i class="fas fa-shopping-bag"></i> Order History</h1>
+                    <p>View all your past orders and purchases.</p>
+                </div>
+                
+                <div id="orders-list" class="orders-container">
+                    <div class="empty-state">
+                        <i class="fas fa-shopping-bag"></i>
+                        <h3>No Orders Yet</h3>
+                        <p>You haven't made any purchases yet.</p>
+                        <a href="buy.html" class="btn-primary"><i class="fas fa-shopping-cart"></i> Start Shopping</a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Order Status Section -->
+            <section id="status-section" class="content-section">
+                <div class="section-header">
+                    <h1><i class="fas fa-clipboard-list"></i> Order Status</h1>
+                    <p>Track your current orders and their delivery status.</p>
+                </div>
+                
+                <div id="status-list" class="orders-container">
+                    <div class="empty-state">
+                        <i class="fas fa-clipboard-list"></i>
+                        <h3>No Active Orders</h3>
+                        <p>You don't have any orders in progress.</p>
+                        <a href="buy.html" class="btn-primary"><i class="fas fa-shopping-cart"></i> Browse Products</a>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-contact">
+                <div class="footer-contact-item">
+                    <i class="fab fa-whatsapp"></i>
+                    <a href="https://wa.me/6285749406558" target="_blank">+62 857-4940-6558</a>
+                </div>
+                <div class="footer-contact-item">
+                    <i class="fab fa-instagram"></i>
+                    <a href="https://www.instagram.com/bakoelaptop/" target="_blank">@bakoelaptop</a>
+                </div>
+            </div>
+            <div class="footer-divider"></div>
+            <p class="footer-copyright">&copy; 2025 BAKOELAPTOP. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+    <!-- Firebase Config & Services -->
+    <script src="firebase-config.js"></script>
+    <script src="script/utils.js"></script>
+    <script src="firebase-auth.js"></script>
+    <script src="firebase-db.js"></script>
+    
+    <script src="script/navbar.js"></script>
+    <script src="script/profile.js"></script>
+</body>
+</html>
