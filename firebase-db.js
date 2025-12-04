@@ -196,6 +196,55 @@ class DatabaseService {
     }
   }
 
+  // Update payment status (for admin approval)
+  async updatePaymentStatus(orderId, paymentStatus, rejectionReason = null) {
+    try {
+      const updateData = {
+        paymentStatus: paymentStatus,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
+
+      if (rejectionReason) {
+        updateData.rejectionReason = rejectionReason;
+      }
+
+      // If payment approved, also mark products as sold
+      if (paymentStatus === 'approved') {
+        const orderDoc = await this.db.collection('orders').doc(orderId).get();
+        if (orderDoc.exists) {
+          const orderData = orderDoc.data();
+          
+          // Update each product's status to 'sold'
+          if (orderData.items && orderData.items.length > 0) {
+            const batch = this.db.batch();
+            
+            for (const item of orderData.items) {
+              if (item.productId) {
+                const productRef = this.db.collection('products').doc(item.productId);
+                batch.update(productRef, {
+                  status: 'sold',
+                  soldAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+              }
+            }
+            
+            await batch.commit();
+            console.log('✅ Products marked as sold');
+          }
+        }
+      }
+
+      await this.db.collection('orders').doc(orderId).update(updateData);
+
+      showSuccess('Payment status updated!');
+      return { success: true };
+    } catch (error) {
+      console.error('Error updating payment status:', error);
+      showError('Failed to update payment status.');
+      return { success: false, error };
+    }
+  }
+
   // ==================== CART ====================
 
   // Get user cart

@@ -400,6 +400,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Initialize My Products section
   initMyProducts();
+
+  // Initialize My Orders section
+  initMyOrders();
 });
 
 // My Products Section
@@ -592,4 +595,255 @@ function displayProducts() {
       </div>
     `;
   }).join('');
+}
+
+// ==================== MY ORDERS SECTION ====================
+
+let currentOrderFilter = 'all';
+let userOrders = [];
+
+function initMyOrders() {
+  // Tab filter buttons
+  const ordersSection = document.getElementById('orders-section');
+  if (!ordersSection) return;
+
+  const tabBtns = ordersSection.querySelectorAll('.tab-btn');
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', function() {
+      tabBtns.forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      currentOrderFilter = this.getAttribute('data-filter');
+      displayOrders();
+    });
+  });
+
+  // Load orders when section is opened
+  const ordersMenuItem = document.querySelector('.menu-item[data-section="orders"]');
+  if (ordersMenuItem) {
+    ordersMenuItem.addEventListener('click', function() {
+      loadUserOrders();
+    });
+  }
+}
+
+async function loadUserOrders() {
+  const user = window.firebaseAuth?.currentUser;
+  if (!user) return;
+
+  const container = document.getElementById('orders-list');
+  container.innerHTML = `
+    <div class="loading-products">
+      <i class="fas fa-spinner fa-spin"></i>
+      <p>Loading your orders...</p>
+    </div>
+  `;
+
+  try {
+    const snapshot = await window.firebaseDB
+      .collection('orders')
+      .where('userId', '==', user.uid)
+      .get();
+
+    userOrders = [];
+    snapshot.forEach(doc => {
+      userOrders.push({
+        id: doc.id,
+        ...doc.data()
+      });
+    });
+
+    // Sort by createdAt manually (newest first)
+    userOrders.sort((a, b) => {
+      if (!a.createdAt) return 1;
+      if (!b.createdAt) return -1;
+      return b.createdAt.toDate() - a.createdAt.toDate();
+    });
+
+    console.log(`📦 Loaded ${userOrders.length} orders`);
+    displayOrders();
+
+  } catch (error) {
+    console.error('Error loading orders:', error);
+    container.innerHTML = `
+      <div class="empty-products">
+        <i class="fas fa-exclamation-circle"></i>
+        <h3>Failed to Load Orders</h3>
+        <p>${error.message}</p>
+        <button class="btn-primary" onclick="loadUserOrders()">
+          <i class="fas fa-redo"></i> Try Again
+        </button>
+      </div>
+    `;
+  }
+}
+
+function displayOrders() {
+  const container = document.getElementById('orders-list');
+  
+  // Filter orders by payment status
+  let filteredOrders = userOrders;
+  if (currentOrderFilter !== 'all') {
+    filteredOrders = userOrders.filter(o => o.paymentStatus === currentOrderFilter);
+  }
+
+  if (filteredOrders.length === 0) {
+    const filterText = currentOrderFilter === 'all' ? 'orders' : `${currentOrderFilter} payment orders`;
+    container.innerHTML = `
+      <div class="empty-products">
+        <i class="fas fa-shopping-bag"></i>
+        <h3>No ${filterText.charAt(0).toUpperCase() + filterText.slice(1)}</h3>
+        <p>You don't have any ${filterText} yet.</p>
+        <a href="buy.html" class="btn-primary">
+          <i class="fas fa-shopping-cart"></i> Start Shopping
+        </a>
+      </div>
+    `;
+    return;
+  }
+
+  // Display orders
+  container.innerHTML = filteredOrders.map(order => {
+    const date = order.createdAt ? new Date(order.createdAt.toDate()).toLocaleDateString('id-ID', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    }) : 'N/A';
+
+    const paymentStatusClass = `status-${order.paymentStatus || 'pending'}`;
+    const paymentStatusIcon = {
+      pending: 'fa-clock',
+      approved: 'fa-check-circle',
+      rejected: 'fa-times-circle'
+    }[order.paymentStatus || 'pending'];
+
+    const paymentStatusText = {
+      pending: 'Pending Verification',
+      approved: 'Payment Approved',
+      rejected: 'Payment Rejected'
+    }[order.paymentStatus || 'pending'];
+
+    return `
+      <div class="order-card" data-status="${order.paymentStatus || 'pending'}">
+        <div class="order-header">
+          <div>
+            <h3 class="order-id">Order #${order.id.substring(0, 8)}</h3>
+            <span class="order-date">
+              <i class="far fa-calendar"></i>
+              ${date}
+            </span>
+          </div>
+          <span class="product-status ${paymentStatusClass}">
+            <i class="fas ${paymentStatusIcon}"></i>
+            ${paymentStatusText}
+          </span>
+        </div>
+
+        <div class="order-items">
+          ${order.items.map(item => `
+            <div class="order-item">
+              <img src="${item.imageURL || 'https://via.placeholder.com/60'}" alt="${item.name}" class="order-item-image">
+              <div class="order-item-details">
+                <h4>${item.name}</h4>
+                <p class="item-price">${formatCurrency(item.price)}</p>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+
+        <div class="order-footer">
+          <div class="order-payment-info">
+            <span><i class="fas fa-wallet"></i> ${order.paymentMethod}</span>
+            ${order.paymentProof ? `
+              <button class="view-proof-btn" onclick="viewPaymentProof('${order.id}')">
+                <i class="fas fa-image"></i> View Proof
+              </button>
+            ` : ''}
+          </div>
+          <div class="order-total">
+            <span class="total-label">Total:</span>
+            <span class="total-amount">${formatCurrency(order.total)}</span>
+          </div>
+        </div>
+
+        ${order.paymentStatus === 'rejected' && order.rejectionReason ? `
+          <div style="margin-top: 12px; padding: 12px; background: #f8d7da; border-left: 4px solid #dc3545; border-radius: 8px;">
+            <strong style="color: #721c24; font-size: 13px; display: flex; align-items: center; gap: 8px;">
+              <i class="fas fa-exclamation-circle"></i> Rejection Reason:
+            </strong>
+            <p style="color: #721c24; font-size: 12px; margin: 8px 0 0 0;">${order.rejectionReason}</p>
+          </div>
+        ` : ''}
+
+        ${order.paymentStatus === 'approved' ? `
+          <div style="margin-top: 12px; padding: 12px; background: #d4edda; border-left: 4px solid #28a745; border-radius: 8px;">
+            <p style="color: #155724; font-size: 13px; margin: 0; display: flex; align-items: center; gap: 8px;">
+              <i class="fas fa-check-circle"></i>
+              <strong>Payment verified!</strong> Your order is being processed.
+            </p>
+          </div>
+        ` : ''}
+      </div>
+    `;
+  }).join('');
+}
+
+// View payment proof in modal
+function viewPaymentProof(orderId) {
+  const order = userOrders.find(o => o.id === orderId);
+  if (!order || !order.paymentProof) return;
+
+  // Create modal
+  const modal = document.createElement('div');
+  modal.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    padding: 20px;
+  `;
+  
+  modal.innerHTML = `
+    <div style="
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      max-width: 600px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+    ">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+        <h3 style="margin: 0;">Payment Proof</h3>
+        <button onclick="this.closest('[style*=fixed]').remove()" style="
+          background: none;
+          border: none;
+          font-size: 24px;
+          cursor: pointer;
+          color: #999;
+        ">&times;</button>
+      </div>
+      <img src="${order.paymentProof}" alt="Payment Proof" style="
+        width: 100%;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+      ">
+    </div>
+  `;
+  
+  document.body.appendChild(modal);
+  
+  // Close on background click
+  modal.onclick = (e) => {
+    if (e.target === modal) {
+      modal.remove();
+    }
+  };
 }

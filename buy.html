@@ -197,8 +197,8 @@
           const product = doc.data();
           product.id = doc.id;
           
-          // Skip sold products
-          if (product.sold === true) {
+          // Skip sold products (check both 'sold' flag and 'status' field)
+          if (product.sold === true || product.status === 'sold') {
             console.log(`⏭️ Skipping sold product: ${product.name}`);
             return;
           }

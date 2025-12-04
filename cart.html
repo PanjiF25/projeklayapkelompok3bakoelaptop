@@ -621,7 +621,7 @@
   }
 
   // === PROCESS PAYMENT WITH PROOF ===
-  function processPaymentWithProof(method) {
+  async function processPaymentWithProof(method) {
     const detailModal = document.getElementById('payment-detail-modal');
     const file = paymentProofInput.files[0];
 
@@ -630,79 +630,101 @@
       return;
     }
 
+    const user = window.firebaseAuth.currentUser;
+    if (!user) {
+      showCustomAlert('Anda harus login terlebih dahulu!', 'Perhatian');
+      return;
+    }
+
     detailModal.classList.remove('active');
     resetPaymentForm();
 
-    showCustomConfirm(`Konfirmasi pembayaran via ${method}? Bukti pembayaran akan diverifikasi oleh admin.`, () => {
-      // Save payment proof to localStorage (in real app, upload to server)
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const proofData = {
-          method: method,
-          timestamp: new Date().toISOString(),
-          proof: e.target.result, // Base64 image
-          status: 'pending'
+    showCustomConfirm(`Konfirmasi pembayaran via ${method}? Bukti pembayaran akan diverifikasi oleh admin.`, async () => {
+      try {
+        showLoading('Memproses pembayaran...');
+
+        // Read payment proof as base64
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+          try {
+            // Get cart items from Firestore
+            const cartDoc = await window.firebaseDB.collection('carts').doc(user.uid).get();
+            
+            if (!cartDoc.exists || !cartDoc.data().items || cartDoc.data().items.length === 0) {
+              hideLoading();
+              showCustomAlert('Keranjang kosong!', 'Perhatian');
+              return;
+            }
+
+            const cartItems = cartDoc.data().items;
+
+            // Get user data
+            const userDoc = await window.firebaseDB.collection('users').doc(user.uid).get();
+            const userData = userDoc.exists ? userDoc.data() : {};
+
+            // Calculate total
+            const total = cartItems.reduce((sum, item) => sum + item.price, 0);
+
+            // Create order in Firestore
+            const orderData = {
+              userId: user.uid,
+              userEmail: user.email,
+              customerName: userData.fullname || userData.username || 'Guest',
+              customerPhone: userData.phone || '',
+              shippingAddress: userData.address || '',
+              items: cartItems.map(item => ({
+                productId: item.productId,
+                name: item.name,
+                price: item.price,
+                imageURL: item.imageURL || 'https://via.placeholder.com/100'
+              })),
+              total: total,
+              paymentMethod: method,
+              paymentProof: e.target.result, // Base64 image
+              paymentStatus: 'pending', // pending, approved, rejected
+              orderStatus: 'processing', // processing, shipped, delivered, cancelled
+              createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+              updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            // Save order to Firestore
+            const orderRef = await window.firebaseDB.collection('orders').add(orderData);
+            console.log('✅ Order created with ID:', orderRef.id);
+
+            // Clear cart after successful order
+            await window.firebaseDB.collection('carts').doc(user.uid).delete();
+
+            hideLoading();
+            showCustomAlert(
+              `Pembayaran via ${method} berhasil disubmit!<br><br>
+              Order ID: <strong>${orderRef.id}</strong><br><br>
+              Bukti pembayaran Anda akan diverifikasi dalam 1x24 jam. 
+              Anda dapat melihat status pembayaran di halaman <a href="profile.html" style="color: #00d4aa;">My Account</a>.`,
+              'Pembayaran Berhasil!'
+            );
+            
+            // Reload cart after delay
+            setTimeout(() => {
+              window.location.reload();
+            }, 2000);
+          } catch (error) {
+            hideLoading();
+            console.error('❌ Error creating order:', error);
+            showCustomAlert('Gagal membuat order: ' + error.message, 'Error');
+          }
         };
-
-        // Process checkout
-        let cart = JSON.parse(localStorage.getItem('cart')) || [];
-        let purchased = JSON.parse(localStorage.getItem('purchased')) || [];
-
-        // Get current user info
-        const currentUser = JSON.parse(localStorage.getItem('currentUser')) || { username: 'Guest' };
-        const users = JSON.parse(localStorage.getItem('users')) || [];
-        const user = users.find(u => u.username === currentUser.username) || {};
-
-        // Calculate total
-        const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-
-        // Create order for admin
-        const orderId = 'ORD' + Date.now();
-        const order = {
-          orderId: orderId,
-          customerName: currentUser.username,
-          customerEmail: user.email || '',
-          customerPhone: user.phone || '',
-          shippingAddress: user.address || '',
-          items: cart.map(item => ({
-            name: item.name,
-            price: item.price,
-            quantity: item.quantity,
-            image: item.image || 'https://via.placeholder.com/100'
-          })),
-          total: total,
-          paymentMethod: method,
-          paymentProof: e.target.result,
-          status: 'paid', // paid status means waiting for admin confirmation
-          date: new Date().toISOString()
-        };
-
-        // Save to allOrders for admin
-        let allOrders = JSON.parse(localStorage.getItem('allOrders')) || [];
-        allOrders.push(order);
-        localStorage.setItem('allOrders', JSON.stringify(allOrders));
-
-        // Add payment proof to each item
-        const purchasedItems = cart.map(item => ({
-          ...item,
-          paymentProof: proofData,
-          orderId: orderId
-        }));
-
-        purchased = [...purchased, ...purchasedItems];
-        localStorage.setItem('purchased', JSON.stringify(purchased));
-
-        // Clear cart
-        localStorage.removeItem('cart');
-
-        showCustomAlert(`Pembayaran via ${method} berhasil disubmit! Order ID: ${orderId}. Bukti pembayaran Anda akan diverifikasi dalam 1x24 jam.`, 'Pembayaran Berhasil!');
         
-        // Reload cart
-        setTimeout(() => {
-          loadCart();
-        }, 1500);
-      };
-      reader.readAsDataURL(file);
+        reader.onerror = () => {
+          hideLoading();
+          showCustomAlert('Gagal membaca file bukti pembayaran!', 'Error');
+        };
+
+        reader.readAsDataURL(file);
+      } catch (error) {
+        hideLoading();
+        console.error('❌ Error processing payment:', error);
+        showCustomAlert('Gagal memproses pembayaran: ' + error.message, 'Error');
+      }
     });
   }
 

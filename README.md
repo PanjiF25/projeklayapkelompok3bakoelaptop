@@ -29,7 +29,9 @@ Platform jual-beli laptop dan gadget bekas dengan sistem **buyback**, **trade-in
 ### 🛒 Untuk Pembeli
 - ✅ Browse produk laptop & handphone dengan filter
 - ✅ Shopping cart dengan multi-items
-- ✅ Order history & status tracking
+- ✅ **Upload bukti pembayaran** setelah checkout
+- ✅ **Track payment status** (Pending → Approved/Rejected)
+- ✅ **Order history & status tracking** di My Orders
 - ✅ User profile management lengkap
 - ✅ Responsive design (mobile/tablet/desktop)
 
@@ -55,10 +57,14 @@ Platform jual-beli laptop dan gadget bekas dengan sistem **buyback**, **trade-in
 - ✅ **Product approval workflow**
   - Review sell requests
   - Approve/Reject dengan alasan
+- ✅ **Payment verification system**
+  - View payment proofs
+  - Approve/Reject payments
+  - Auto-mark products as sold when approved
 - ✅ **Manage all products** (CRUD operations)
 - ✅ **User management**
 - ✅ **Order & trade request tracking**
-- ✅ **Dashboard statistics** (coming soon)
+- ✅ **Dashboard statistics**
 
 ### 🔐 Authentication & Security
 - ✅ Firebase Authentication (Email/Password)

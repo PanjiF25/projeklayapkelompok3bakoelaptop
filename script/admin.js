@@ -817,17 +817,113 @@ document.getElementById('product-form').addEventListener('submit', async (e) => 
 
 // ==================== ORDERS MANAGEMENT ====================
 
-function loadOrders() {
+async function loadOrders() {
   const container = document.getElementById('orders-list');
+  const filter = document.getElementById('order-filter')?.value || 'all';
   
-  // Show empty state (orders feature not implemented yet)
   container.innerHTML = `
     <div class="empty-state">
-      <i class="fas fa-shopping-cart"></i>
-      <h3>Belum Ada Pesanan</h3>
-      <p>Pesanan dari customer akan muncul di sini</p>
+      <i class="fas fa-spinner fa-spin"></i>
+      <h3>Loading Orders...</h3>
     </div>
   `;
+
+  try {
+    // Get all orders from Firestore
+    const snapshot = await window.firebaseDB.collection('orders')
+      .get();
+    
+    let orders = [];
+    snapshot.forEach(doc => {
+      orders.push({ id: doc.id, ...doc.data() });
+    });
+
+    // Sort by createdAt (newest first)
+    orders.sort((a, b) => {
+      if (!a.createdAt) return 1;
+      if (!b.createdAt) return -1;
+      return b.createdAt.toDate() - a.createdAt.toDate();
+    });
+
+    // Filter by payment status
+    if (filter !== 'all') {
+      orders = orders.filter(o => o.paymentStatus === filter);
+    }
+
+    if (orders.length === 0) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <i class="fas fa-shopping-cart"></i>
+          <h3>Belum Ada Pesanan</h3>
+          <p>Pesanan dari customer akan muncul di sini</p>
+        </div>
+      `;
+      return;
+    }
+
+    // Display orders
+    container.innerHTML = orders.map(order => {
+      const date = order.createdAt ? new Date(order.createdAt.toDate()).toLocaleDateString('id-ID', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      }) : 'N/A';
+
+      const paymentStatusClass = `status-${order.paymentStatus || 'pending'}`;
+      const paymentStatusText = {
+        pending: 'Pending Verification',
+        approved: 'Payment Approved',
+        rejected: 'Payment Rejected'
+      }[order.paymentStatus || 'pending'];
+
+      return `
+        <div class="order-card" onclick="viewOrderDetail('${order.id}')">
+          <div class="order-header">
+            <div>
+              <span class="order-id">Order #${order.id.substring(0, 8)}</span>
+              <div style="font-size: 13px; color: #888; margin-top: 5px;">
+                <i class="far fa-calendar"></i> ${date}
+              </div>
+            </div>
+            <span class="order-status ${paymentStatusClass}">${paymentStatusText}</span>
+          </div>
+          <div class="order-details">
+            <div class="order-detail-item">
+              <strong>Customer:</strong>
+              <span>${order.customerName || 'Guest'}</span>
+            </div>
+            <div class="order-detail-item">
+              <strong>Email:</strong>
+              <span>${order.userEmail || '-'}</span>
+            </div>
+            <div class="order-detail-item">
+              <strong>Total:</strong>
+              <span>Rp ${order.total ? parseInt(order.total).toLocaleString('id-ID') : '0'}</span>
+            </div>
+            <div class="order-detail-item">
+              <strong>Payment Method:</strong>
+              <span>${order.paymentMethod || '-'}</span>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+  } catch (error) {
+    console.error('Error loading orders:', error);
+    container.innerHTML = `
+      <div class="empty-state">
+        <i class="fas fa-exclamation-circle" style="color: #dc3545;"></i>
+        <h3>Error Loading Orders</h3>
+        <p>${error.message}</p>
+        <button class="btn-primary" onclick="loadOrders()">
+          <i class="fas fa-redo"></i> Try Again
+        </button>
+      </div>
+    `;
+  }
 }
 
 function loadOrdersOld() {
@@ -871,67 +967,249 @@ function loadOrdersOld() {
 
 document.getElementById('order-filter').addEventListener('change', loadOrders);
 
-function viewOrderDetail(orderId) {
-  const orders = JSON.parse(localStorage.getItem('allOrders')) || [];
-  const order = orders.find(o => o.orderId === orderId);
-  
-  if (!order) return;
-  
-  const content = document.getElementById('order-detail-content');
-  content.innerHTML = `
-    <div style="padding: 25px;">
-      <div style="margin-bottom: 20px;">
-        <h3>Order #${order.orderId}</h3>
-        <span class="order-status status-${order.status}">${getStatusText(order.status)}</span>
-      </div>
-      
-      <div style="margin-bottom: 20px;">
-        <h4 style="margin-bottom: 10px;">Informasi Customer</h4>
-        <p><strong>Nama:</strong> ${order.customerName}</p>
-        <p><strong>Email:</strong> ${order.customerEmail || '-'}</p>
-        <p><strong>No. HP:</strong> ${order.customerPhone}</p>
-        <p><strong>Alamat:</strong> ${order.shippingAddress || '-'}</p>
-      </div>
-      
-      <div style="margin-bottom: 20px;">
-        <h4 style="margin-bottom: 10px;">Detail Produk</h4>
-        ${order.items ? order.items.map(item => `
-          <div style="display: flex; gap: 15px; margin-bottom: 15px; padding: 15px; background: #f8f9fa; border-radius: 10px;">
-            <img src="${item.image}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">
+async function viewOrderDetail(orderId) {
+  try {
+    const orderDoc = await window.firebaseDB.collection('orders').doc(orderId).get();
+    
+    if (!orderDoc.exists) {
+      showCustomAlert('Order tidak ditemukan!', 'Error');
+      return;
+    }
+
+    const order = { id: orderDoc.id, ...orderDoc.data() };
+    
+    const date = order.createdAt ? new Date(order.createdAt.toDate()).toLocaleDateString('id-ID', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    }) : 'N/A';
+
+    const paymentStatusClass = `status-${order.paymentStatus || 'pending'}`;
+    const paymentStatusText = {
+      pending: 'Pending Verification',
+      approved: 'Payment Approved',
+      rejected: 'Payment Rejected'
+    }[order.paymentStatus || 'pending'];
+    
+    const content = document.getElementById('order-detail-content');
+    content.innerHTML = `
+      <div style="padding: 25px;">
+        <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: start;">
+          <div>
+            <h3 style="margin: 0 0 8px 0;">Order #${order.id.substring(0, 8)}</h3>
+            <p style="margin: 0; color: #888; font-size: 14px;">
+              <i class="far fa-calendar"></i> ${date}
+            </p>
+          </div>
+          <span class="order-status ${paymentStatusClass}">${paymentStatusText}</span>
+        </div>
+        
+        <div style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 10px;">
+          <h4 style="margin: 0 0 12px 0;">Informasi Customer</h4>
+          <p style="margin: 5px 0;"><strong>Nama:</strong> ${order.customerName || 'Guest'}</p>
+          <p style="margin: 5px 0;"><strong>Email:</strong> ${order.userEmail || '-'}</p>
+          <p style="margin: 5px 0;"><strong>No. HP:</strong> ${order.customerPhone || '-'}</p>
+          <p style="margin: 5px 0;"><strong>Alamat:</strong> ${order.shippingAddress || '-'}</p>
+        </div>
+        
+        <div style="margin-bottom: 20px;">
+          <h4 style="margin-bottom: 12px;">Detail Produk</h4>
+          ${order.items && order.items.length > 0 ? order.items.map(item => `
+            <div style="display: flex; gap: 15px; margin-bottom: 12px; padding: 15px; background: #f8f9fa; border-radius: 10px;">
+              <img src="${item.imageURL || 'https://via.placeholder.com/80'}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; border: 2px solid #e0e0e0;">
+              <div style="flex: 1;">
+                <p style="margin: 0 0 5px 0;"><strong>${item.name}</strong></p>
+                <p style="margin: 5px 0; color: #00a896; font-weight: 600;">Rp ${parseInt(item.price).toLocaleString('id-ID')}</p>
+              </div>
+            </div>
+          `).join('') : '<p>Data produk tidak tersedia</p>'}
+        </div>
+        
+        <div style="margin-bottom: 20px; padding: 15px; background: #e8f5f3; border-radius: 10px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
             <div>
-              <p><strong>${item.name}</strong></p>
-              <p>Harga: Rp ${parseInt(item.price).toLocaleString('id-ID')}</p>
-              <p>Jumlah: ${item.quantity}</p>
+              <p style="margin: 0; font-size: 14px; color: #666;">Metode Pembayaran</p>
+              <p style="margin: 5px 0 0 0; font-size: 16px; font-weight: 600; color: #333;">
+                <i class="fas fa-wallet"></i> ${order.paymentMethod || '-'}
+              </p>
+            </div>
+            <div style="text-align: right;">
+              <p style="margin: 0; font-size: 14px; color: #666;">Total Pembayaran</p>
+              <p style="margin: 5px 0 0 0; font-size: 22px; font-weight: 700; color: #00a896;">
+                Rp ${order.total ? parseInt(order.total).toLocaleString('id-ID') : '0'}
+              </p>
             </div>
           </div>
-        `).join('') : '<p>Data produk tidak tersedia</p>'}
-      </div>
-      
-      <div style="margin-bottom: 20px;">
-        <h4>Total: <span style="color: #00d4aa;">Rp ${order.total ? order.total.toLocaleString('id-ID') : '0'}</span></h4>
-        <p><strong>Metode Pembayaran:</strong> ${order.paymentMethod || '-'}</p>
-      </div>
-      
-      ${order.paymentProof ? `
-        <div style="margin-bottom: 20px;">
-          <h4 style="margin-bottom: 10px;">Bukti Pembayaran</h4>
-          <img src="${order.paymentProof}" style="max-width: 100%; border-radius: 10px; cursor: pointer;" onclick="window.open('${order.paymentProof}', '_blank')">
         </div>
-      ` : ''}
+        
+        ${order.paymentProof ? `
+          <div style="margin-bottom: 20px;">
+            <h4 style="margin-bottom: 10px;">Bukti Pembayaran</h4>
+            <img src="${order.paymentProof}" style="max-width: 100%; border-radius: 10px; cursor: pointer; border: 2px solid #e0e0e0;" onclick="window.open('${order.paymentProof}', '_blank')">
+          </div>
+        ` : ''}
+
+        ${order.paymentStatus === 'rejected' && order.rejectionReason ? `
+          <div style="margin-bottom: 20px; padding: 15px; background: #f8d7da; border-left: 4px solid #dc3545; border-radius: 8px;">
+            <strong style="color: #721c24;">Rejection Reason:</strong>
+            <p style="color: #721c24; margin: 8px 0 0 0;">${order.rejectionReason}</p>
+          </div>
+        ` : ''}
+        
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+          ${order.paymentStatus === 'pending' ? `
+            <button class="btn-primary" onclick="approvePayment('${order.id}')" style="flex: 1;">
+              <i class="fas fa-check"></i> Approve Payment
+            </button>
+            <button class="btn-delete" onclick="rejectPayment('${order.id}')" style="flex: 1;">
+              <i class="fas fa-times"></i> Reject Payment
+            </button>
+          ` : ''}
+          ${order.paymentStatus === 'approved' ? `
+            <div style="padding: 15px; background: #d4edda; border-left: 4px solid #28a745; border-radius: 8px; width: 100%;">
+              <p style="margin: 0; color: #155724; font-weight: 600;">
+                <i class="fas fa-check-circle"></i> Payment has been approved
+              </p>
+            </div>
+          ` : ''}
+        </div>
+      </div>
+    `;
+    
+    document.getElementById('order-modal').classList.add('active');
+    
+  } catch (error) {
+    console.error('Error loading order detail:', error);
+    showCustomAlert('Error loading order: ' + error.message, 'Error');
+  }
+}
+
+async function approvePayment(orderId) {
+  showCustomConfirm('Approve pembayaran ini? Produk akan ditandai sebagai terjual.', async () => {
+    try {
+      showLoading('Approving payment...');
       
+      const result = await window.firebaseDB.updatePaymentStatus(orderId, 'approved');
+      
+      if (result.success) {
+        hideLoading();
+        closeModal('order-modal');
+        showCustomAlert('Payment approved! Products marked as sold.', 'Success');
+        loadOrders();
+        loadDashboardStats();
+      }
+    } catch (error) {
+      hideLoading();
+      console.error('Error approving payment:', error);
+      showCustomAlert('Error: ' + error.message, 'Error');
+    }
+  }, 'Approve Payment');
+}
+
+async function rejectPayment(orderId) {
+  // Show input modal for rejection reason
+  const modal = document.createElement('div');
+  modal.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10001;
+    padding: 20px;
+  `;
+  
+  modal.innerHTML = `
+    <div style="
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      max-width: 500px;
+      width: 100%;
+    ">
+      <h3 style="margin: 0 0 20px 0;">Reject Payment</h3>
+      <p style="margin: 0 0 15px 0; color: #666;">
+        Mohon berikan alasan penolakan untuk customer:
+      </p>
+      <textarea id="rejection-reason" style="
+        width: 100%;
+        min-height: 100px;
+        padding: 12px;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        font-family: inherit;
+        font-size: 14px;
+        resize: vertical;
+      " placeholder="Contoh: Bukti pembayaran tidak valid, nominal tidak sesuai, dll."></textarea>
       <div style="display: flex; gap: 10px; margin-top: 20px;">
-        ${order.status === 'paid' ? `
-          <button class="btn-primary" onclick="confirmOrder('${order.orderId}')">Konfirmasi Pesanan</button>
-          <button class="btn-delete" onclick="cancelOrder('${order.orderId}')">Batalkan</button>
-        ` : ''}
-        ${order.status === 'confirmed' ? `
-          <button class="btn-primary" onclick="completeOrder('${order.orderId}')">Selesaikan Pesanan</button>
-        ` : ''}
+        <button id="cancel-reject" style="
+          flex: 1;
+          padding: 12px;
+          border: 2px solid #ddd;
+          background: white;
+          color: #666;
+          border-radius: 8px;
+          font-size: 15px;
+          font-weight: 600;
+          cursor: pointer;
+        ">Cancel</button>
+        <button id="confirm-reject" style="
+          flex: 1;
+          padding: 12px;
+          border: none;
+          background: #dc3545;
+          color: white;
+          border-radius: 8px;
+          font-size: 15px;
+          font-weight: 600;
+          cursor: pointer;
+        ">Reject Payment</button>
       </div>
     </div>
   `;
   
-  document.getElementById('order-modal').classList.add('active');
+  document.body.appendChild(modal);
+  
+  const reasonInput = modal.querySelector('#rejection-reason');
+  const cancelBtn = modal.querySelector('#cancel-reject');
+  const confirmBtn = modal.querySelector('#confirm-reject');
+  
+  cancelBtn.onclick = () => modal.remove();
+  
+  confirmBtn.onclick = async () => {
+    const reason = reasonInput.value.trim();
+    
+    if (!reason) {
+      showCustomAlert('Mohon berikan alasan penolakan!', 'Perhatian');
+      return;
+    }
+    
+    modal.remove();
+    
+    try {
+      showLoading('Rejecting payment...');
+      
+      const result = await window.firebaseDB.updatePaymentStatus(orderId, 'rejected', reason);
+      
+      if (result.success) {
+        hideLoading();
+        closeModal('order-modal');
+        showCustomAlert('Payment rejected. Customer will be notified.', 'Success');
+        loadOrders();
+        loadDashboardStats();
+      }
+    } catch (error) {
+      hideLoading();
+      console.error('Error rejecting payment:', error);
+      showCustomAlert('Error: ' + error.message, 'Error');
+    }
+  };
 }
 
 function confirmOrder(orderId) {
