@@ -264,7 +264,7 @@
     const alertOk = document.getElementById('alert-ok');
 
     alertTitle.textContent = title;
-    alertMessage.textContent = message;
+    alertMessage.innerHTML = message; // Use innerHTML to support HTML tags
     alertModal.classList.add('active');
 
     // Remove old listener
