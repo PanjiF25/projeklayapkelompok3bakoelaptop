@@ -637,9 +637,10 @@
     }
 
     detailModal.classList.remove('active');
-    resetPaymentForm();
-
-    showCustomConfirm(`Konfirmasi pembayaran via ${method}? Bukti pembayaran akan diverifikasi oleh admin.`, async () => {
+    
+    showCustomConfirm(`Konfirmasi pembayaran via ${method}? Bukti pembayaran akan diverifikasi oleh admin.`, () => {
+      resetPaymentForm();
+      
       try {
         showLoading('Memproses pembayaran...');
 
