@@ -625,6 +625,9 @@
 
   // === PROCESS PAYMENT WITH PROOF ===
   async function processPaymentWithProof(method) {
+    console.log('🔥🔥🔥 PAYMENT FUNCTION CALLED - VERSION 3.0 🔥🔥🔥');
+    console.log('Payment method:', method);
+    
     const detailModal = document.getElementById('payment-detail-modal');
     const file = paymentProofInput.files[0];
 
@@ -699,6 +702,8 @@
             await window.firebaseDB.collection('carts').doc(user.uid).delete();
 
             hideLoading();
+            
+            console.log('🎉 NEW CODE VERSION 2.0 - USING INLINE HTML RENDERING');
             
             // Show success message with proper HTML rendering
             const alertModal = document.getElementById('custom-alert');
