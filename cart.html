@@ -699,13 +699,28 @@
             await window.firebaseDB.collection('carts').doc(user.uid).delete();
 
             hideLoading();
-            showCustomAlert(
-              `Pembayaran via ${method} berhasil disubmit!<br><br>
+            
+            // Show success message with proper HTML rendering
+            const alertModal = document.getElementById('custom-alert');
+            const alertTitle = document.getElementById('alert-title');
+            const alertMessage = document.getElementById('alert-message');
+            const alertOk = document.getElementById('alert-ok');
+
+            alertTitle.textContent = 'Pembayaran Berhasil!';
+            alertMessage.innerHTML = `Pembayaran via ${method} berhasil disubmit!<br><br>
               Order ID: <strong>${orderRef.id}</strong><br><br>
               Bukti pembayaran Anda akan diverifikasi dalam 1x24 jam. 
-              Anda dapat melihat status pembayaran di halaman <a href="profile.html" style="color: #00d4aa;">My Account</a>.`,
-              'Pembayaran Berhasil!'
-            );
+              Anda dapat melihat status pembayaran di halaman <a href="profile.html" style="color: #00d4aa;">My Account</a>.`;
+            alertModal.classList.add('active');
+
+            // Remove old listener
+            const newOkBtn = alertOk.cloneNode(true);
+            alertOk.parentNode.replaceChild(newOkBtn, alertOk);
+
+            // Add new listener
+            newOkBtn.addEventListener('click', () => {
+              alertModal.classList.remove('active');
+            });
             
             // Reload cart after delay
             setTimeout(() => {
