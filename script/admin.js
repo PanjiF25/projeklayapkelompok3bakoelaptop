@@ -142,7 +142,6 @@ async function loadPendingProducts() {
             <p><strong>Penjual:</strong> ${product.sellerName}</p>
             <p><strong>Email:</strong> ${product.sellerEmail}</p>
             <p><strong>Kondisi:</strong> ${product.condition}</p>
-            <p><strong>Stok:</strong> ${product.stock} unit</p>
             <p><strong>Tanggal:</strong> ${formatDate(product.createdAt)}</p>
           </div>
           
