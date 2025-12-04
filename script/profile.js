@@ -542,24 +542,28 @@ function displayProducts() {
       year: 'numeric'
     }) : 'N/A';
 
-    const statusClass = `status-${product.status || 'pending'}`;
+    // Handle status with default fallback
+    const productStatus = product.status || 'pending';
+    const statusClass = `status-${productStatus}`;
     const statusIcon = {
       pending: 'fa-clock',
       approved: 'fa-check-circle',
-      rejected: 'fa-times-circle'
-    }[product.status || 'pending'];
+      rejected: 'fa-times-circle',
+      sold: 'fa-handshake'
+    }[productStatus] || 'fa-clock';
 
     const statusText = {
       pending: 'Under Review',
       approved: 'Accepted',
-      rejected: 'Declined'
-    }[product.status || 'pending'];
+      rejected: 'Declined',
+      sold: 'Sold'
+    }[productStatus] || 'Under Review';
 
     // Get first image or fallback to imageURL
     const productImage = (product.images && product.images[0]) || product.imageURL || 'https://via.placeholder.com/150?text=No+Image';
 
     return `
-      <div class="product-card" data-status="${product.status || 'pending'}">
+      <div class="product-card" data-status="${productStatus}">
         <img src="${productImage}" alt="${product.name}" class="product-image">
         <div class="product-info">
           <div class="product-header">
@@ -572,7 +576,7 @@ function displayProducts() {
             </div>
             <span class="product-status ${statusClass}">
               <i class="fas ${statusIcon}"></i>
-              ${statusText}
+              ${statusText.toUpperCase()}
             </span>
           </div>
           <p class="product-specs">${product.specs}</p>
@@ -585,7 +589,7 @@ function displayProducts() {
               </span>
             </div>
           </div>
-          ${product.status === 'rejected' && product.rejectionReason ? `
+          ${productStatus === 'rejected' && product.rejectionReason ? `
             <div style="margin-top: 12px; padding: 10px; background: #f8d7da; border-left: 4px solid #dc3545; border-radius: 8px;">
               <strong style="color: #721c24; font-size: 13px;">Rejection Reason:</strong>
               <p style="color: #721c24; font-size: 12px; margin: 5px 0 0 0;">${product.rejectionReason}</p>
