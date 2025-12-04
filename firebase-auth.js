@@ -74,28 +74,36 @@ class AuthService {
       // Detailed error messages in Indonesian
       switch (error.code) {
         case 'auth/email-already-in-use':
-          errorMessage = '❌ Email sudah terdaftar. Silakan gunakan email lain atau login.';
+          errorMessage = 'Email sudah terdaftar. Silakan gunakan email lain atau login dengan akun yang ada.';
           break;
         case 'auth/invalid-email':
-          errorMessage = '❌ Format email tidak valid. Contoh: nama@email.com';
+          errorMessage = 'Format email tidak valid. Pastikan format email benar (contoh: nama@email.com).';
           break;
         case 'auth/weak-password':
-          errorMessage = '❌ Password terlalu lemah. Minimal 6 karakter.';
+          errorMessage = 'Password terlalu lemah. Gunakan minimal 6 karakter dengan kombinasi huruf dan angka.';
           break;
         case 'auth/network-request-failed':
-          errorMessage = '❌ Koneksi internet bermasalah. Periksa koneksi Anda dan coba lagi.';
+          errorMessage = 'Koneksi internet bermasalah. Periksa koneksi Anda dan coba lagi.';
           break;
         case 'auth/too-many-requests':
-          errorMessage = '❌ Terlalu banyak percobaan. Tunggu beberapa saat lalu coba lagi.';
+          errorMessage = 'Terlalu banyak percobaan. Silakan tunggu beberapa saat lalu coba lagi.';
           break;
         case 'auth/operation-not-allowed':
-          errorMessage = '❌ Registrasi email/password tidak diaktifkan. Hubungi admin.';
+          errorMessage = 'Registrasi dengan email/password tidak diaktifkan. Silakan hubungi admin.';
           break;
         case 'permission-denied':
-          errorMessage = '❌ Akses ditolak. Periksa pengaturan keamanan Firebase.';
+          errorMessage = 'Akses ditolak. Terjadi masalah dengan pengaturan keamanan database.';
+          break;
+        case 'auth/missing-password':
+          errorMessage = 'Password tidak boleh kosong.';
+          break;
+        case 'auth/missing-email':
+          errorMessage = 'Email tidak boleh kosong.';
           break;
         default:
-          errorMessage = `❌ Error: ${error.message || 'Terjadi kesalahan tidak dikenal'}`;
+          // Remove technical Firebase prefix from error message
+          const cleanMessage = error.message ? error.message.replace(/Firebase: Error \((auth\/[^)]+)\)\.?/, '').trim() : '';
+          errorMessage = cleanMessage || 'Terjadi kesalahan saat mendaftar. Silakan coba lagi.';
       }
       
       showError(errorMessage);
@@ -136,28 +144,37 @@ class AuthService {
       // Detailed error messages in Indonesian
       switch (error.code) {
         case 'auth/user-not-found':
-          errorMessage = '❌ Akun tidak ditemukan. Silakan daftar terlebih dahulu.';
+          errorMessage = 'Akun tidak ditemukan. Silakan daftar terlebih dahulu.';
           break;
         case 'auth/wrong-password':
-          errorMessage = '❌ Password salah. Silakan coba lagi atau reset password.';
+          errorMessage = 'Password salah. Silakan coba lagi atau gunakan "Forgot Password".';
           break;
         case 'auth/invalid-email':
-          errorMessage = '❌ Format email tidak valid. Contoh: nama@email.com';
+          errorMessage = 'Format email tidak valid. Contoh: nama@email.com';
           break;
         case 'auth/user-disabled':
-          errorMessage = '❌ Akun Anda telah dinonaktifkan. Hubungi admin.';
+          errorMessage = 'Akun Anda telah dinonaktifkan. Silakan hubungi admin.';
           break;
         case 'auth/network-request-failed':
-          errorMessage = '❌ Koneksi internet bermasalah. Periksa koneksi Anda dan coba lagi.';
+          errorMessage = 'Koneksi internet bermasalah. Periksa koneksi Anda.';
           break;
         case 'auth/too-many-requests':
-          errorMessage = '❌ Terlalu banyak percobaan login. Tunggu beberapa saat atau reset password.';
+          errorMessage = 'Terlalu banyak percobaan login gagal. Silakan tunggu beberapa menit atau reset password Anda.';
           break;
         case 'auth/invalid-credential':
-          errorMessage = '❌ Email atau password salah. Periksa kembali data Anda.';
+        case 'auth/invalid-login-credentials':
+          errorMessage = 'Email atau password salah. Pastikan Anda memasukkan email dan password yang benar.';
+          break;
+        case 'auth/missing-password':
+          errorMessage = 'Password tidak boleh kosong.';
+          break;
+        case 'auth/missing-email':
+          errorMessage = 'Email tidak boleh kosong.';
           break;
         default:
-          errorMessage = `❌ Error: ${error.message || 'Terjadi kesalahan tidak dikenal'}`;
+          // Remove technical Firebase prefix from error message
+          const cleanMessage = error.message ? error.message.replace(/Firebase: Error \((auth\/[^)]+)\)\.?/, '').trim() : '';
+          errorMessage = cleanMessage || 'Terjadi kesalahan saat login. Silakan coba lagi.';
       }
       
       showError(errorMessage);

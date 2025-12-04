@@ -77,15 +77,17 @@
           
           <!-- Error Message -->
           <div id="error-msg" style="
-            color: #d32f2f; 
-            background: #ffebee; 
-            border: 1px solid #ef5350; 
+            color: #721c24; 
+            background: #f8d7da; 
+            border: 1px solid #f5c6cb; 
+            border-left: 4px solid #dc3545;
             border-radius: 8px; 
-            padding: 12px; 
+            padding: 14px 16px; 
             margin-top: 15px; 
             display: none;
             font-size: 14px;
-            line-height: 1.5;
+            line-height: 1.6;
+            animation: slideDown 0.3s ease-out;
           "></div>
         </form>
 
@@ -133,15 +135,21 @@
       errorMsg.textContent = '';
       errorMsg.style.display = 'none';
       
-      // Validation
+      // Basic validation
+      if (!email) {
+        errorMsg.innerHTML = '<i class="fas fa-exclamation-circle"></i> Silakan masukkan email Anda.';
+        errorMsg.style.display = 'block';
+        return;
+      }
+      
       if (!validateEmail(email)) {
-        errorMsg.textContent = '❌ Format email tidak valid. Contoh: nama@email.com';
+        errorMsg.innerHTML = '<i class="fas fa-exclamation-circle"></i> Format email tidak valid. Contoh: nama@email.com';
         errorMsg.style.display = 'block';
         return;
       }
       
       if (!password) {
-        errorMsg.textContent = '❌ Silakan masukkan password Anda';
+        errorMsg.innerHTML = '<i class="fas fa-exclamation-circle"></i> Silakan masukkan password Anda.';
         errorMsg.style.display = 'block';
         return;
       }
@@ -150,7 +158,7 @@
       const result = await authService.login(email, password);
       
       if (!result.success) {
-        errorMsg.textContent = result.error;
+        errorMsg.innerHTML = '<i class="fas fa-exclamation-circle"></i> ' + result.error;
         errorMsg.style.display = 'block';
       }
     });
