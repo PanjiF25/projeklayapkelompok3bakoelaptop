@@ -372,8 +372,6 @@ document.querySelectorAll('.nav-item').forEach(item => {
     const section = item.dataset.section;
     if (section === 'orders') {
       loadOrders();
-    } else if (section === 'payments') {
-      loadPayments();
     } else if (section === 'users') {
       loadUsers();
     }
@@ -384,9 +382,26 @@ document.querySelectorAll('.nav-item').forEach(item => {
 document.getElementById('admin-logout').addEventListener('click', () => {
   showCustomConfirm(
     'Anda yakin ingin keluar dari dashboard admin?',
-    () => {
-      localStorage.removeItem('adminUser');
-      window.location.href = 'index.html';
+    async () => {
+      try {
+        showLoading('Logging out...');
+        
+        // Sign out from Firebase Auth
+        await window.firebaseAuth.signOut();
+        
+        // Clear local storage
+        localStorage.removeItem('adminUser');
+        
+        hideLoading();
+        console.log('✅ Admin logged out successfully');
+        
+        // Redirect to home
+        window.location.href = 'index.html';
+      } catch (error) {
+        hideLoading();
+        console.error('Error logging out:', error);
+        showCustomAlert('Error logging out: ' + error.message, 'Error');
+      }
     },
     'Konfirmasi Logout'
   );
@@ -411,62 +426,90 @@ async function loadDashboardStats() {
       .get();
     const approvedProducts = approvedSnapshot.size;
     
+    // Get all orders from Firestore
+    const ordersSnapshot = await window.firebaseDB.collection('orders').get();
+    const totalOrders = ordersSnapshot.size;
+    
     document.getElementById('total-products').textContent = totalProducts;
+    document.getElementById('total-orders').textContent = totalOrders;
     document.getElementById('pending-orders').textContent = pendingProducts; // Using as pending products count
     document.getElementById('completed-orders').textContent = approvedProducts; // Using as approved products count
     
-    // For now, keep orders from localStorage until we migrate orders
-    const orders = JSON.parse(localStorage.getItem('allOrders')) || [];
-    document.getElementById('total-orders').textContent = orders.length;
-    
     // Load recent orders
-    loadRecentOrders();
+    await loadRecentOrders();
   } catch (error) {
     console.error('Error loading dashboard stats:', error);
   }
 }
 
-function loadRecentOrders() {
-  const orders = JSON.parse(localStorage.getItem('allOrders')) || [];
-  const recentOrders = orders.slice(-5).reverse();
-  
+async function loadRecentOrders() {
   const container = document.getElementById('recent-orders');
   
-  if (recentOrders.length === 0) {
-    container.innerHTML = '<div class="empty-state"><i class="fas fa-inbox"></i><h3>Belum Ada Pesanan</h3></div>';
-    return;
-  }
-  
-  let html = `
-    <table>
-      <thead>
-        <tr>
-          <th>Order ID</th>
-          <th>Customer</th>
-          <th>Produk</th>
-          <th>Total</th>
-          <th>Status</th>
-          <th>Tanggal</th>
-        </tr>
-      </thead>
-      <tbody>
-  `;
-  
-  recentOrders.forEach(order => {
-    html += `
-      <tr>
-        <td><strong>${order.orderId}</strong></td>
-        <td>${order.customerName}</td>
-        <td>${order.items ? order.items.length : 1} item</td>
-        <td>Rp ${order.total ? order.total.toLocaleString('id-ID') : '0'}</td>
-        <td><span class="order-status status-${order.status}">${getStatusText(order.status)}</span></td>
-        <td>${new Date(order.date).toLocaleDateString('id-ID')}</td>
-      </tr>
+  try {
+    // Get latest 5 orders from Firestore
+    const snapshot = await window.firebaseDB.collection('orders')
+      .orderBy('createdAt', 'desc')
+      .limit(5)
+      .get();
+    
+    if (snapshot.empty) {
+      container.innerHTML = '<div class="empty-state"><i class="fas fa-inbox"></i><h3>Belum Ada Pesanan</h3></div>';
+      return;
+    }
+    
+    let html = `
+      <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+          <tr style="background: #f8f9fa; text-align: left;">
+            <th style="padding: 12px; border-bottom: 2px solid #dee2e6;">Order ID</th>
+            <th style="padding: 12px; border-bottom: 2px solid #dee2e6;">Customer</th>
+            <th style="padding: 12px; border-bottom: 2px solid #dee2e6;">Items</th>
+            <th style="padding: 12px; border-bottom: 2px solid #dee2e6;">Total</th>
+            <th style="padding: 12px; border-bottom: 2px solid #dee2e6;">Payment</th>
+            <th style="padding: 12px; border-bottom: 2px solid #dee2e6;">Tanggal</th>
+          </tr>
+        </thead>
+        <tbody>
     `;
-  });
-  
-  html += '</tbody></table>';
-  container.innerHTML = html;
+    
+    snapshot.forEach(doc => {
+      const order = doc.data();
+      const orderId = doc.id;
+      const date = order.createdAt ? new Date(order.createdAt.toDate()).toLocaleDateString('id-ID', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric'
+      }) : 'N/A';
+      
+      const paymentStatusInfo = {
+        pending: { text: 'Pending', color: '#ffc107' },
+        approved: { text: 'Approved', color: '#00d4aa' },
+        rejected: { text: 'Rejected', color: '#dc3545' }
+      }[order.paymentStatus || 'pending'];
+      
+      html += `
+        <tr style="cursor: pointer; transition: background 0.2s;" onclick="showSection('orders'); setTimeout(() => viewOrderDetail('${orderId}'), 100);" onmouseover="this.style.background='#f8f9fa'" onmouseout="this.style.background='white'">
+          <td style="padding: 12px; border-bottom: 1px solid #dee2e6;"><strong>#${orderId.substring(0, 8)}</strong></td>
+          <td style="padding: 12px; border-bottom: 1px solid #dee2e6;">${order.customerName || 'Guest'}</td>
+          <td style="padding: 12px; border-bottom: 1px solid #dee2e6;">${order.items ? order.items.length : 0} item(s)</td>
+          <td style="padding: 12px; border-bottom: 1px solid #dee2e6;">Rp ${order.total ? parseInt(order.total).toLocaleString('id-ID') : '0'}</td>
+          <td style="padding: 12px; border-bottom: 1px solid #dee2e6;">
+            <span style="background: ${paymentStatusInfo.color}; color: white; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600;">
+              ${paymentStatusInfo.text}
+            </span>
+          </td>
+          <td style="padding: 12px; border-bottom: 1px solid #dee2e6; color: #666;">${date}</td>
+        </tr>
+      `;
+    });
+    
+    html += '</tbody></table>';
+    container.innerHTML = html;
+    
+  } catch (error) {
+    console.error('Error loading recent orders:', error);
+    container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-circle" style="color: #dc3545;"></i><h3>Error loading orders</h3></div>';
+  }
 }
 
 function getStatusText(status) {
@@ -513,10 +556,14 @@ async function loadProducts() {
     });
     
     tbody.innerHTML = products.map(product => {
-      // Status badge color
+      // Status badge color - Check if sold first (priority)
       let statusColor = '#ffa500'; // orange for pending
       let statusText = 'Pending';
-      if (product.status === 'approved') {
+      
+      if (product.status === 'sold') {
+        statusColor = '#dc3545'; // red for sold
+        statusText = 'Sold';
+      } else if (product.status === 'approved') {
         statusColor = '#00d4aa';
         statusText = 'Approved';
       } else if (product.status === 'rejected') {
@@ -524,8 +571,8 @@ async function loadProducts() {
         statusText = 'Rejected';
       }
       
-      // Sold badge
-      const soldBadge = product.sold ? '<span class="badge" style="background: #ff6b6b; margin-left: 5px;">SOLD</span>' : '';
+      // Sold badge (backup if status not updated)
+      const soldBadge = product.sold && product.status !== 'sold' ? '<span class="badge" style="background: #dc3545; margin-left: 5px;">SOLD</span>' : '';
       
       return `
         <tr>
@@ -539,11 +586,44 @@ async function loadProducts() {
             ${soldBadge}
           </td>
           <td>
-            <div class="action-buttons">
-              <button class="btn-edit" onclick="editProductFirebase('${product.id}')" title="Edit"><i class="fas fa-edit"></i></button>
-              <button class="btn-delete" onclick="deleteProductFirebase('${product.id}', '${product.name}')" title="Hapus"><i class="fas fa-trash"></i></button>
+            <div class="action-buttons" style="display: flex; gap: 8px; justify-content: center;">
+              <button class="btn-edit" onclick="editProductFirebase('${product.id}')" title="Edit" style="
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                border: none;
+                padding: 8px 12px;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: transform 0.2s;
+                font-size: 14px;
+              " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="btn-delete" onclick="deleteProductFirebase('${product.id}', '${product.name}')" title="Hapus" style="
+                background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+                color: white;
+                border: none;
+                padding: 8px 12px;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: transform 0.2s;
+                font-size: 14px;
+              " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                <i class="fas fa-trash"></i>
+              </button>
               ${product.status === 'approved' && !product.sold ? 
-                `<button class="btn-secondary" onclick="markAsSold('${product.id}', '${product.name}')" title="Mark as Sold" style="background: #ff6b6b;"><i class="fas fa-check"></i></button>` : ''}
+                `<button onclick="markAsSold('${product.id}', '${product.name}')" title="Mark as Sold" style="
+                  background: linear-gradient(135deg, #00d4aa 0%, #00a896 100%);
+                  color: white;
+                  border: none;
+                  padding: 8px 12px;
+                  border-radius: 8px;
+                  cursor: pointer;
+                  transition: transform 0.2s;
+                  font-size: 14px;
+                " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                  <i class="fas fa-check-circle"></i>
+                </button>` : ''}
             </div>
           </td>
         </tr>
@@ -871,12 +951,14 @@ async function loadOrders() {
         minute: '2-digit'
       }) : 'N/A';
 
-      const paymentStatusClass = `status-${order.paymentStatus || 'pending'}`;
-      const paymentStatusText = {
-        pending: 'Pending Verification',
-        approved: 'Payment Approved',
-        rejected: 'Payment Rejected'
+      const paymentStatusInfo = {
+        pending: { text: 'Pending Verification', color: '#ffc107', icon: 'fa-clock' },
+        approved: { text: 'Payment Approved', color: '#00d4aa', icon: 'fa-check-circle' },
+        rejected: { text: 'Payment Rejected', color: '#dc3545', icon: 'fa-times-circle' }
       }[order.paymentStatus || 'pending'];
+      
+      const paymentStatusClass = `status-${order.paymentStatus || 'pending'}`;
+      const paymentStatusText = paymentStatusInfo.text;
 
       return `
         <div class="order-card" onclick="viewOrderDetail('${order.id}')">
@@ -887,7 +969,9 @@ async function loadOrders() {
                 <i class="far fa-calendar"></i> ${date}
               </div>
             </div>
-            <span class="order-status ${paymentStatusClass}">${paymentStatusText}</span>
+            <span class="order-status" style="background: ${paymentStatusInfo.color}; color: white; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600;">
+              <i class="fas ${paymentStatusInfo.icon}"></i> ${paymentStatusText}
+            </span>
           </div>
           <div class="order-details">
             <div class="order-detail-item">
@@ -1091,14 +1175,20 @@ async function approvePayment(orderId) {
     try {
       showLoading('Approving payment...');
       
-      const result = await window.firebaseDB.updatePaymentStatus(orderId, 'approved');
+      const result = await window.dbService.updatePaymentStatus(orderId, 'approved');
       
       if (result.success) {
         hideLoading();
         closeModal('order-modal');
         showCustomAlert('Payment approved! Products marked as sold.', 'Success');
-        loadOrders();
-        loadDashboardStats();
+        
+        // Refresh both orders and products with delay to ensure Firestore updates
+        setTimeout(async () => {
+          await loadOrders();
+          await loadProducts();
+          await loadDashboardStats();
+          console.log('✅ All data refreshed');
+        }, 500);
       }
     } catch (error) {
       hideLoading();
@@ -1195,14 +1285,20 @@ async function rejectPayment(orderId) {
     try {
       showLoading('Rejecting payment...');
       
-      const result = await window.firebaseDB.updatePaymentStatus(orderId, 'rejected', reason);
+      const result = await window.dbService.updatePaymentStatus(orderId, 'rejected', reason);
       
       if (result.success) {
         hideLoading();
         closeModal('order-modal');
         showCustomAlert('Payment rejected. Customer will be notified.', 'Success');
-        loadOrders();
-        loadDashboardStats();
+        
+        // Refresh both orders and products with delay
+        setTimeout(async () => {
+          await loadOrders();
+          await loadProducts();
+          await loadDashboardStats();
+          console.log('✅ All data refreshed');
+        }, 500);
       }
     } catch (error) {
       hideLoading();
@@ -1246,56 +1342,10 @@ function updateOrderStatus(orderId, newStatus) {
 
 // ==================== PAYMENTS MANAGEMENT ====================
 
-function loadPayments() {
-  const container = document.getElementById('payments-grid');
-  
-  // Show empty state (payments feature not implemented yet)
-  container.innerHTML = `
-    <div class="empty-state" style="grid-column: 1/-1;">
-      <i class="fas fa-receipt"></i>
-      <h3>Belum Ada Pembayaran</h3>
-      <p>Bukti pembayaran dari customer akan muncul di sini untuk diverifikasi</p>
-    </div>
-  `;
-}
+// Payment functions removed - now handled in Orders section
+// All payment verification is done through viewOrderDetail()
 
-function loadPaymentsOld() {
-  // OLD CODE - kept for reference
-  const orders = JSON.parse(localStorage.getItem('allOrders')) || [];
-  const paymentsWithProof = orders.filter(order => order.paymentProof && order.status === 'paid');
-  const container = document.getElementById('payments-grid');
-  
-  container.innerHTML = paymentsWithProof.map(order => `
-    <div class="payment-card">
-      <img src="${order.paymentProof}" class="payment-image" onclick="window.open('${order.paymentProof}', '_blank')">
-      <div class="payment-info">
-        <p><strong>Order ID:</strong> ${order.orderId}</p>
-        <p><strong>Customer:</strong> ${order.customerName}</p>
-        <p><strong>Total:</strong> Rp ${order.total ? order.total.toLocaleString('id-ID') : '0'}</p>
-        <p><strong>Metode:</strong> ${order.paymentMethod}</p>
-        <p><strong>Tanggal:</strong> ${new Date(order.date).toLocaleDateString('id-ID')}</p>
-        <div class="payment-actions">
-          <button class="btn-confirm" onclick="confirmPayment('${order.orderId}')">
-            <i class="fas fa-check"></i> Terima
-          </button>
-          <button class="btn-reject" onclick="rejectPayment('${order.orderId}')">
-            <i class="fas fa-times"></i> Tolak
-          </button>
-        </div>
-      </div>
-    </div>
-  `).join('');
-}
-
-function confirmPayment(orderId) {
-  showCustomConfirm('Konfirmasi pembayaran ini? Pesanan akan diproses.', () => {
-    updateOrderStatus(orderId, 'confirmed');
-    loadPayments();
-    showCustomAlert('Pembayaran dikonfirmasi! Pesanan akan diproses.');
-  }, 'Konfirmasi Pembayaran');
-}
-
-function rejectPayment(orderId) {
+function rejectPaymentOld(orderId) {
   showCustomConfirm('Tolak pembayaran ini? Pesanan akan dibatalkan.', () => {
     updateOrderStatus(orderId, 'cancelled');
     loadPayments();

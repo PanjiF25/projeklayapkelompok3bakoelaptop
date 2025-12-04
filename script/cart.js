@@ -354,7 +354,136 @@ function showSuccessPopup(productName, price) {
 }
 
 // Custom confirm dialog for add to cart
-function showCustomConfirm(title, subtitle) {
+function showCustomConfirm(messageOrTitle, callbackOrSubtitle) {
+  console.log('🎯🎯🎯 cart.js showCustomConfirm called - VERSION 5.0');
+  console.log('Param 1:', messageOrTitle);
+  console.log('Param 2 type:', typeof callbackOrSubtitle);
+  
+  // Check if second parameter is a function (callback style) or string (subtitle style)
+  const isCallbackStyle = typeof callbackOrSubtitle === 'function';
+  
+  if (isCallbackStyle) {
+    // New style: (message, callback) - for payment confirmation
+    const message = messageOrTitle;
+    const callback = callbackOrSubtitle;
+    
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      animation: fadeIn 0.2s ease;
+    `;
+    
+    modal.innerHTML = `
+      <div style="
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        max-width: 450px;
+        width: 90%;
+        max-height: 70vh;
+        overflow-y: auto;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        animation: slideUp 0.3s ease;
+      ">
+        <div style="text-align: center; margin-bottom: 20px;">
+          <i class="fas fa-question-circle" style="font-size: 48px; color: #00d4aa;"></i>
+        </div>
+        <h3 style="margin: 0 0 15px 0; text-align: center; color: #333;">Konfirmasi</h3>
+        <div style="margin: 0 0 25px 0; text-align: center; color: #666; line-height: 1.6;">${message}</div>
+        <div style="display: flex; gap: 10px;">
+          <button class="btn-cancel" style="
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #ddd;
+            background: white;
+            color: #666;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+          ">Batal</button>
+          <button class="btn-confirm" style="
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: linear-gradient(135deg, #00d4aa 0%, #00a896 100%);
+            color: white;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+          ">Ya, Lanjutkan</button>
+        </div>
+      </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    const btnCancel = modal.querySelector('.btn-cancel');
+    const btnConfirm = modal.querySelector('.btn-confirm');
+    
+    btnCancel.addEventListener('click', () => {
+      document.body.removeChild(modal);
+    });
+    
+    btnConfirm.addEventListener('click', () => {
+      document.body.removeChild(modal);
+      
+      // Show loading overlay
+      const loadingOverlay = document.createElement('div');
+      loadingOverlay.id = 'payment-loading-overlay';
+      loadingOverlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 10001;
+        animation: fadeIn 0.3s ease;
+      `;
+      loadingOverlay.innerHTML = `
+        <div style="text-align: center;">
+          <div class="spinner" style="
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(0, 212, 170, 0.2);
+            border-top: 4px solid #00d4aa;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+          "></div>
+          <p style="color: white; font-size: 18px; margin: 0; font-weight: 500;">Memproses pembayaran...</p>
+          <p style="color: rgba(255,255,255,0.7); font-size: 14px; margin: 10px 0 0;">Mohon tunggu sebentar</p>
+        </div>
+      `;
+      document.body.appendChild(loadingOverlay);
+      
+      callback();
+    });
+    
+    return;
+  }
+  
+  // Old style: (title, subtitle) - for add to cart
+  const title = messageOrTitle;
+  const subtitle = callbackOrSubtitle;
+  
   return new Promise((resolve) => {
     // Create modal
     const modal = document.createElement('div');

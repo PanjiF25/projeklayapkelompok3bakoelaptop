@@ -21,12 +21,88 @@ function checkAuthStatus() {
     authButtons.style.display = 'none';
     userMenu.style.display = 'flex';
     
+    // Check if user is admin and add admin dashboard button
+    checkAndAddAdminButton(user);
+    
   } else {
     console.log('❌ No Firebase user detected');
     
     // User is not logged in - show Sign In/Sign Up buttons
     userMenu.style.display = 'none';
     authButtons.style.display = 'flex';
+  }
+}
+
+// Check if user is admin and add dashboard button
+async function checkAndAddAdminButton(user) {
+  try {
+    // Check if admin button already exists
+    if (document.getElementById('admin-dashboard-btn')) {
+      console.log('✅ Admin button already exists');
+      return;
+    }
+    
+    // Wait for Firestore to be ready
+    if (!window.firebaseDB) {
+      console.log('⏳ Waiting for Firestore to be ready...');
+      setTimeout(() => checkAndAddAdminButton(user), 200);
+      return;
+    }
+    
+    console.log('🔍 Checking if user is admin:', user.uid);
+    const userDoc = await window.firebaseDB.collection('users').doc(user.uid).get();
+    
+    if (userDoc.exists && userDoc.data().role === 'admin') {
+      console.log('🔑 User is admin, adding dashboard button');
+      
+      // Add admin dashboard button to navbar (try both .nav-links and .main-nav)
+      const navLinks = document.querySelector('.nav-links') || document.querySelector('.main-nav');
+      if (navLinks) {
+        const adminBtn = document.createElement('a');
+        adminBtn.href = 'admin.html';
+        adminBtn.id = 'admin-dashboard-btn';
+        adminBtn.style.cssText = `
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+          padding: 8px 16px;
+          border-radius: 8px;
+          font-weight: 600;
+          font-size: 14px;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          transition: transform 0.2s, box-shadow 0.2s;
+          box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        `;
+        adminBtn.innerHTML = '<i class="fas fa-tachometer-alt"></i> Admin Dashboard';
+        
+        // Add hover effect
+        adminBtn.addEventListener('mouseenter', () => {
+          adminBtn.style.transform = 'translateY(-2px)';
+          adminBtn.style.boxShadow = '0 6px 20px rgba(102, 126, 234, 0.4)';
+        });
+        adminBtn.addEventListener('mouseleave', () => {
+          adminBtn.style.transform = 'translateY(0)';
+          adminBtn.style.boxShadow = '0 4px 15px rgba(102, 126, 234, 0.3)';
+        });
+        
+        // Insert before auth buttons or user menu
+        const authButtons = document.getElementById('auth-buttons');
+        if (authButtons) {
+          navLinks.insertBefore(adminBtn, authButtons);
+        } else {
+          navLinks.appendChild(adminBtn);
+        }
+        
+        console.log('✅ Admin dashboard button added to navbar');
+      } else {
+        console.warn('⚠️ Navbar navigation element not found');
+      }
+    } else {
+      console.log('ℹ️ User is not admin, role:', userDoc.exists ? userDoc.data().role : 'no document');
+    }
+  } catch (error) {
+    console.error('❌ Error checking admin status:', error);
   }
 }
 

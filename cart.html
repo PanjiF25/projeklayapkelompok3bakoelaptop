@@ -7,6 +7,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
+  <!-- VERSION 4.0 - TIMESTAMP: 2025-12-04-16:30 -->
   
   <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
@@ -61,12 +62,12 @@
 
   <!-- Custom Confirm Modal -->
   <div id="custom-confirm" class="custom-modal">
-    <div class="custom-modal-content">
+    <div class="custom-modal-content" style="max-height: 70vh !important; overflow-y: auto !important; padding: 25px !important;">
       <div class="custom-modal-icon">
         <i class="fas fa-question-circle"></i>
       </div>
       <h3 id="confirm-title">Konfirmasi</h3>
-      <p id="confirm-message">Apakah Anda yakin?</p>
+      <p id="confirm-message" style="max-height: 150px; overflow-y: auto; margin-bottom: 20px; font-size: 14px;">Apakah Anda yakin?</p>
       <div class="custom-modal-buttons">
         <button id="confirm-cancel" class="btn-cancel">Batal</button>
         <button id="confirm-yes" class="btn-confirm">Ya, Lanjutkan</button>
@@ -76,12 +77,12 @@
 
   <!-- Custom Alert Modal -->
   <div id="custom-alert" class="custom-modal">
-    <div class="custom-modal-content alert-content">
+    <div class="custom-modal-content alert-content" style="max-height: 80vh !important; overflow-y: auto !important; padding: 25px !important;">
       <div class="custom-modal-icon success-icon">
         <i class="fas fa-check-circle"></i>
       </div>
       <h3 id="alert-title">Berhasil!</h3>
-      <p id="alert-message">Operasi berhasil dilakukan</p>
+      <p id="alert-message" style="max-height: 200px; overflow-y: auto; margin-bottom: 20px;">Operasi berhasil dilakukan</p>
       <button id="alert-ok" class="btn-ok">OK</button>
     </div>
   </div>
@@ -235,12 +236,17 @@
     <script>
   // === CUSTOM MODAL FUNCTIONS ===
   function showCustomConfirm(message, onConfirm) {
+    console.log('🚀🚀🚀 showCustomConfirm VERSION 4.0 CALLED 🚀🚀🚀');
+    console.log('📝 Message received:', message);
+    console.log('📏 Message length:', message.length);
+    
     const confirmModal = document.getElementById('custom-confirm');
     const confirmMessage = document.getElementById('confirm-message');
     const confirmYes = document.getElementById('confirm-yes');
     const confirmCancel = document.getElementById('confirm-cancel');
 
-    confirmMessage.textContent = message;
+    confirmMessage.innerHTML = message;
+    console.log('✅ Message set to innerHTML');
     confirmModal.classList.add('active');
 
     // Remove old listeners
@@ -625,7 +631,7 @@
 
   // === PROCESS PAYMENT WITH PROOF ===
   async function processPaymentWithProof(method) {
-    console.log('🔥🔥🔥 PAYMENT FUNCTION CALLED - VERSION 3.0 🔥🔥🔥');
+    console.log('🔥🔥🔥 PAYMENT FUNCTION CALLED - VERSION 4.0 🔥🔥🔥');
     console.log('Payment method:', method);
     
     const detailModal = document.getElementById('payment-detail-modal');
@@ -644,8 +650,10 @@
 
     detailModal.classList.remove('active');
     
-    showCustomConfirm(`Konfirmasi pembayaran via ${method}? Bukti pembayaran akan diverifikasi oleh admin.`, () => {
-      resetPaymentForm();
+    const confirmMsg = `Konfirmasi pembayaran via ${method}?<br><br>Bukti pembayaran akan diverifikasi oleh admin.`;
+    console.log('💬 About to show confirm with message:', confirmMsg);
+    
+    showCustomConfirm(confirmMsg, () => {
       
       try {
         showLoading('Memproses pembayaran...');
@@ -697,40 +705,94 @@
             // Save order to Firestore
             const orderRef = await window.firebaseDB.collection('orders').add(orderData);
             console.log('✅ Order created with ID:', orderRef.id);
+            console.log('📦 Order data:', orderData);
 
             // Clear cart after successful order
             await window.firebaseDB.collection('carts').doc(user.uid).delete();
 
             hideLoading();
             
-            console.log('🎉 NEW CODE VERSION 2.0 - USING INLINE HTML RENDERING');
+            // Remove loading overlay if exists
+            const loadingOverlay = document.getElementById('payment-loading-overlay');
+            if (loadingOverlay) {
+              document.body.removeChild(loadingOverlay);
+            }
             
-            // Show success message with proper HTML rendering
-            const alertModal = document.getElementById('custom-alert');
-            const alertTitle = document.getElementById('alert-title');
-            const alertMessage = document.getElementById('alert-message');
-            const alertOk = document.getElementById('alert-ok');
+            console.log('🎉 SUCCESS PAYMENT VERSION 5.0');
+            
+            // Show beautiful success modal
+            const successModal = document.createElement('div');
+            successModal.style.cssText = `
+              position: fixed;
+              top: 0;
+              left: 0;
+              width: 100%;
+              height: 100%;
+              background: rgba(0, 0, 0, 0.6);
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              z-index: 10002;
+              animation: fadeIn 0.3s ease;
+            `;
+            
+            successModal.innerHTML = `
+              <div style="
+                background: white;
+                padding: 40px 30px;
+                border-radius: 16px;
+                max-width: 420px;
+                width: 90%;
+                box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+                text-align: center;
+                animation: slideUp 0.3s ease;
+              ">
+                <div style="
+                  width: 80px;
+                  height: 80px;
+                  background: linear-gradient(135deg, #00d4aa 0%, #00a896 100%);
+                  border-radius: 50%;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  margin: 0 auto 25px;
+                  animation: scaleIn 0.5s ease;
+                ">
+                  <i class="fas fa-check" style="font-size: 40px; color: white;"></i>
+                </div>
+                <h2 style="margin: 0 0 15px 0; color: #333; font-size: 26px; font-weight: 700;">Pembayaran Berhasil!</h2>
+                <p style="margin: 0 0 10px 0; color: #666; font-size: 16px; line-height: 1.6;">Order berhasil dibuat!</p>
+                <p style="margin: 0 0 30px 0; color: #999; font-size: 14px;">Bukti pembayaran akan diverifikasi oleh admin</p>
+                <button class="btn-ok" style="
+                  width: 100%;
+                  padding: 14px;
+                  border: none;
+                  background: linear-gradient(135deg, #00d4aa 0%, #00a896 100%);
+                  color: white;
+                  border-radius: 10px;
+                  font-size: 16px;
+                  font-weight: 600;
+                  cursor: pointer;
+                  transition: transform 0.2s;
+                  box-shadow: 0 4px 15px rgba(0, 212, 170, 0.3);
+                ">Cek Status Pesanan</button>
+                <p style="margin: 15px 0 0; color: #aaa; font-size: 13px;">Halaman akan reload otomatis dalam 3 detik</p>
+              </div>
+            `;
+            
+            document.body.appendChild(successModal);
+            
+            const btnOk = successModal.querySelector('.btn-ok');
 
-            alertTitle.textContent = 'Pembayaran Berhasil!';
-            alertMessage.innerHTML = `Pembayaran via ${method} berhasil disubmit!<br><br>
-              Order ID: <strong>${orderRef.id}</strong><br><br>
-              Bukti pembayaran Anda akan diverifikasi dalam 1x24 jam. 
-              Anda dapat melihat status pembayaran di halaman <a href="profile.html" style="color: #00d4aa;">My Account</a>.`;
-            alertModal.classList.add('active');
-
-            // Remove old listener
-            const newOkBtn = alertOk.cloneNode(true);
-            alertOk.parentNode.replaceChild(newOkBtn, alertOk);
-
-            // Add new listener
-            newOkBtn.addEventListener('click', () => {
-              alertModal.classList.remove('active');
+            btnOk.addEventListener('click', () => {
+              window.location.href = 'profile.html';
             });
             
-            // Reload cart after delay
+            // Auto reload after 3 seconds
             setTimeout(() => {
+              resetPaymentForm();
               window.location.reload();
-            }, 2000);
+            }, 3000);
           } catch (error) {
             hideLoading();
             console.error('❌ Error creating order:', error);

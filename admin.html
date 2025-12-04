@@ -20,6 +20,23 @@
   <header class="admin-navbar">
     <div class="logo">BAKOELAPTOP <span class="admin-badge">ADMIN</span></div>
     <div class="admin-user">
+      <a href="index.html" class="btn-home" style="
+        background: linear-gradient(135deg, #00d4aa 0%, #00a896 100%);
+        color: white;
+        padding: 10px 18px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: transform 0.2s, box-shadow 0.2s;
+        box-shadow: 0 4px 15px rgba(0, 212, 170, 0.3);
+        margin-right: 15px;
+      " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(0, 212, 170, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(0, 212, 170, 0.3)'">
+        <i class="fas fa-home"></i> Halaman Utama
+      </a>
       <span id="admin-name">Admin</span>
       <button id="admin-logout" class="btn-logout">
         <i class="fas fa-sign-out-alt"></i> Logout
@@ -40,10 +57,7 @@
         <i class="fas fa-laptop"></i> Produk
       </a>
       <a href="#orders" class="nav-item" data-section="orders">
-        <i class="fas fa-shopping-cart"></i> Pesanan
-      </a>
-      <a href="#payments" class="nav-item" data-section="payments">
-        <i class="fas fa-money-check-alt"></i> Pembayaran
+        <i class="fas fa-shopping-cart"></i> Pesanan & Pembayaran
       </a>
       <a href="#users" class="nav-item" data-section="users">
         <i class="fas fa-users"></i> Pengguna
@@ -167,17 +181,6 @@
 
       <div class="orders-list" id="orders-list">
         <!-- Orders will be loaded here -->
-      </div>
-    </section>
-
-    <!-- Payments Section -->
-    <section id="payments-section" class="content-section">
-      <div class="section-header">
-        <h1><i class="fas fa-money-check-alt"></i> Verifikasi Pembayaran</h1>
-      </div>
-
-      <div class="payments-grid" id="payments-grid">
-        <!-- Payment proofs will be loaded here -->
       </div>
     </section>
 
